@@ -1,0 +1,24 @@
+[
+  {
+    "id": "nav-site",
+    "title": "公益API导航站",
+    "description": "精心收录 AI 大模型 API 的导航站",
+    "tags": ["Next.js", "Supabase", "TypeScript"],
+    "url": "https://yuanjia1314.ccwu.cc",
+    "github": "https://github.com/yuanjia1314/nav-site",
+    "image": "/images/projects/nav-site.png",
+    "featured": true,
+    "year": 2026
+  },
+  {
+    "id": "blog",
+    "title": "个人博客",
+    "description": "基于 Next.js 16 的技术博客兼作品集",
+    "tags": ["Next.js", "Tailwind CSS", "MDX"],
+    "url": "",
+    "github": "https://github.com/yuanjia1314/blog",
+    "image": "/images/projects/blog.png",
+    "featured": true,
+    "year": 2026
+  }
+]
