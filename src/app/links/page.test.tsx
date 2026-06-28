@@ -60,4 +60,24 @@ describe('LinksPage', () => {
     );
     expect(allLinks.length).toBe(totalItems);
   });
+
+  it('keeps curated links unique and free of tracking parameters', () => {
+    const urls = linkCategories.flatMap((cat) =>
+      cat.items.map((item) => item.url),
+    );
+    const trackingParamPattern =
+      /[?&](aff|ref|referral|utm_[^=]+|coupon|partner)=/i;
+
+    expect(new Set(urls).size).toBe(urls.length);
+    expect(urls).not.toEqual(
+      expect.arrayContaining([expect.stringMatching(trackingParamPattern)]),
+    );
+  });
+
+  it('includes the engineering docs and VPS collections', () => {
+    expect(linkCategories.some((cat) => cat.id === 'engineering-docs')).toBe(
+      true,
+    );
+    expect(linkCategories.some((cat) => cat.id === 'vps')).toBe(true);
+  });
 });

@@ -9,7 +9,7 @@ export default function LinksPage() {
             <span className="section__eyebrow">Links</span>
             <h2 className="section__title">导航</h2>
             <p className="section__subtitle">
-              精选开发工具、学习资源和趣味小站
+              精选技术文档、VPS 官网、开发工具和趣味小站
             </p>
           </div>
         </div>
