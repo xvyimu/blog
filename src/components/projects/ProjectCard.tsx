@@ -2,7 +2,13 @@ import { Project } from '@/types';
 import Image from 'next/image';
 import Link from 'next/link';
 
-export default function ProjectCard({ project }: { project: Project }) {
+export default function ProjectCard({
+  project,
+  priority = false,
+}: {
+  project: Project;
+  priority?: boolean;
+}) {
   return (
     <article className="card card--project group">
       <Link href={`/projects/${project.id}`} className="block">
@@ -14,6 +20,7 @@ export default function ProjectCard({ project }: { project: Project }) {
               fill
               className="object-cover transition-transform group-hover:scale-105"
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              priority={priority}
             />
           </div>
         ) : (

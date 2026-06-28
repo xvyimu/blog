@@ -1,5 +1,5 @@
 import { getAllPosts } from './posts';
-import { slugifyTag } from './utils';
+import { decodeRouteSegment, slugifyTag } from './utils';
 import { TagInfo } from '@/types';
 
 /** 聚合所有标签，附带文章数，按文章数降序 */
@@ -24,7 +24,8 @@ export function getAllTags(): TagInfo[] {
 
 /** URL slug → 原始标签名；找不到返回 null */
 export function getTagNameBySlug(slug: string): string | null {
-  const found = getAllTags().find((t) => t.slug === slug);
+  const decodedSlug = decodeRouteSegment(slug);
+  const found = getAllTags().find((t) => t.slug === decodedSlug);
   return found?.tag ?? null;
 }
 

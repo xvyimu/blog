@@ -13,7 +13,7 @@ A personal blog built with Next.js 16.2 (App Router), React 19, and Tailwind CSS
 - **Content**: MDX with custom frontmatter parser (`lib/parse-frontmatter.ts`, js-yaml 4.x), next-mdx-remote
 - **Syntax Highlighting**: Shiki via rehype-pretty-code
 - **Search**: fuse.js (client-side fuzzy search)
-- **Testing**: Vitest (unit/integration, 184 tests), Playwright (E2E, 30 tests)
+- **Testing**: Vitest (unit/integration, 197 tests), Playwright (E2E, 32 tests)
 - **CI**: GitHub Actions (lint / test / tsc / build / bundle-budget / e2e)
 - **Deployment**: Vercel
 
@@ -78,8 +78,8 @@ src/
 ```bash
 pnpm dev          # Start dev server (port 3000)
 pnpm build        # Generate RSS + production build
-pnpm test         # Run unit/integration tests (184 tests)
-pnpm test:e2e     # Run E2E tests (30 tests, auto-starts dev server on port 3001)
+pnpm test         # Run unit/integration tests (197 tests)
+pnpm test:e2e     # Run E2E tests (32 tests, auto-starts dev server on port 3001)
 pnpm lint         # ESLint
 pnpm analyze     # Bundle size analysis
 ```

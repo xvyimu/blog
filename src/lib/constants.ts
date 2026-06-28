@@ -1,7 +1,42 @@
+const DEFAULT_DEV_SITE_URL = 'http://localhost:3000';
+
+type SiteUrlEnv = {
+  NEXT_PUBLIC_SITE_URL?: string;
+  NODE_ENV?: string;
+};
+
+export function resolveSiteUrl(
+  env: SiteUrlEnv = process.env,
+): string {
+  const rawUrl = env.NEXT_PUBLIC_SITE_URL?.trim();
+
+  if (!rawUrl) {
+    if (env.NODE_ENV === 'production') {
+      throw new Error(
+        'NEXT_PUBLIC_SITE_URL is required in production for canonical URLs, RSS, sitemap, and JSON-LD.',
+      );
+    }
+    return DEFAULT_DEV_SITE_URL;
+  }
+
+  let parsed: URL;
+  try {
+    parsed = new URL(rawUrl);
+  } catch {
+    throw new Error('NEXT_PUBLIC_SITE_URL must be an absolute http(s) URL.');
+  }
+
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+    throw new Error('NEXT_PUBLIC_SITE_URL must be an absolute http(s) URL.');
+  }
+
+  return rawUrl.replace(/\/+$/, '');
+}
+
 export const SITE_CONFIG = {
   name: '西江月',
   description: '云原生 · 全栈 · 自动化',
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
+  url: resolveSiteUrl(),
   author: {
     name: '雨天狂奔',
   },

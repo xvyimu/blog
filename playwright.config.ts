@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 const isCI = !!process.env.CI;
+const skipWebServer = process.env.PLAYWRIGHT_SKIP_WEB_SERVER === '1';
 
 /**
  * Playwright E2E configuration
@@ -35,12 +36,14 @@ export default defineConfig({
     },
   ],
 
-  webServer: {
-    // CI uses production build for realistic behavior; local uses dev for HMR.
-    // CI job must run `pnpm build` before `pnpm test:e2e`.
-    command: isCI ? 'npx next start --port 3001' : 'npx next dev --port 3001',
-    url: 'http://localhost:3001',
-    reuseExistingServer: true,
-    timeout: 60_000,
-  },
+  webServer: skipWebServer
+    ? undefined
+    : {
+        // CI uses production build for realistic behavior; local uses dev for HMR.
+        // CI job must run `pnpm build` before `pnpm test:e2e`.
+        command: isCI ? 'next start --port 3001' : 'next dev --port 3001',
+        url: 'http://localhost:3001',
+        reuseExistingServer: true,
+        timeout: 60_000,
+      },
 });

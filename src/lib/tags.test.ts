@@ -35,6 +35,10 @@ describe('getTagNameBySlug', () => {
     }
   });
 
+  it('resolves URL-encoded Chinese slugs', () => {
+    expect(getTagNameBySlug(encodeURIComponent('后端'))).toBe('后端');
+  });
+
   it('returns null for an unknown slug', () => {
     expect(getTagNameBySlug('this-tag-does-not-exist')).toBeNull();
   });

@@ -1,6 +1,7 @@
 import { getAllPosts } from './posts';
 import { TAG_TO_CATEGORY } from './constants';
 import { CategoryInfo } from '@/types';
+import { decodeRouteSegment } from './utils';
 
 /** 从文章标签推断分类 */
 export function inferCategory(tags: string[]): string | null {
@@ -48,15 +49,17 @@ export function getAllCategories(): CategoryInfo[] {
 
 /** 按分类筛选文章 */
 export function getPostsByCategory(categoryName: string) {
+  const decodedCategoryName = decodeRouteSegment(categoryName);
   return getAllPosts().filter((post) => {
     const inferred = inferCategory(post.tags);
-    return inferred === categoryName;
+    return inferred === decodedCategoryName;
   });
 }
 
 /** 检查分类是否存在 */
 export function isValidCategory(categoryName: string): boolean {
-  return getAllCategories().some((c) => c.slug === categoryName);
+  const decodedCategoryName = decodeRouteSegment(categoryName);
+  return getAllCategories().some((c) => c.slug === decodedCategoryName);
 }
 
 /** 用于 generateStaticParams */

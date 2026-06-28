@@ -4,6 +4,7 @@ import BlogList from '@/components/blog/BlogList';
 import { getTagNameBySlug, getAllTagSlugs } from '@/lib/tags';
 import { getPostsByTag } from '@/lib/posts';
 import { SITE_CONFIG } from '@/lib/constants';
+import { decodeRouteSegment } from '@/lib/utils';
 
 export async function generateStaticParams() {
   return getAllTagSlugs().map((tag) => ({ tag }));
@@ -11,11 +12,12 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ tag: string }> }): Promise<Metadata> {
   const { tag } = await params;
+  const tagSlug = decodeRouteSegment(tag);
   const tagName = getTagNameBySlug(tag);
   return {
-    title: `${tagName ?? tag} | ${SITE_CONFIG.name}`,
+    title: `${tagName ?? tagSlug} | ${SITE_CONFIG.name}`,
     alternates: {
-      canonical: `${SITE_CONFIG.url}/tags/${tag}`,
+      canonical: `${SITE_CONFIG.url}/tags/${encodeURIComponent(tagSlug)}`,
     },
   };
 }

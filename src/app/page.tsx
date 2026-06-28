@@ -114,8 +114,8 @@ export default function HomePage() {
               </div>
             </div>
             <div className="cards cards--2">
-              {featuredProjects.map((project) => (
-                <ProjectCard key={project.id} project={project} />
+              {featuredProjects.map((project, index) => (
+                <ProjectCard key={project.id} project={project} priority={index === 0} />
               ))}
             </div>
           </div>

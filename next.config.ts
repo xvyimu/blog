@@ -7,13 +7,11 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const isDev = process.env.NODE_ENV === 'development';
 
-// Warn if NEXT_PUBLIC_SITE_URL is not set in production — SEO metadata,
-// OG images, canonical URLs, and JSON-LD @id will all point to localhost.
+// Fail fast if production URL is missing — SEO metadata, OG images,
+// canonical URLs, RSS, sitemap, and JSON-LD must not point to localhost.
 if (!isDev && !process.env.NEXT_PUBLIC_SITE_URL) {
-  console.warn(
-    '\n⚠️  NEXT_PUBLIC_SITE_URL is not set. SEO metadata, OG images, canonical URLs,\n' +
-    '    and JSON-LD @id will point to http://localhost:3000 in production.\n' +
-    '    Set it in your Vercel project settings or .env.production.\n',
+  throw new Error(
+    'NEXT_PUBLIC_SITE_URL is required for production builds. Set it in Vercel project settings or .env.production.',
   );
 }
 

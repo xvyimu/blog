@@ -62,6 +62,24 @@ test.describe('标签详情页', () => {
     const count = await blogLinks.count();
     expect(count).toBeGreaterThan(0);
   });
+
+  test('中文标签 URL 编码后仍显示相关文章', async ({ page }) => {
+    await page.goto(`/tags/${encodeURIComponent('后端')}`);
+    await page.waitForLoadState('domcontentloaded');
+
+    await expect(page.getByRole('heading', { name: '标签：后端' })).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('a[href*="/blog/"]').first()).toBeVisible();
+  });
+});
+
+test.describe('分类详情页', () => {
+  test('中文分类 URL 编码后仍显示相关文章', async ({ page }) => {
+    await page.goto(`/categories/${encodeURIComponent('前端开发')}`);
+    await page.waitForLoadState('domcontentloaded');
+
+    await expect(page.getByRole('heading', { name: '分类：前端开发' })).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('a[href*="/blog/"]').first()).toBeVisible();
+  });
 });
 
 test.describe('关于页面', () => {

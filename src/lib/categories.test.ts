@@ -97,6 +97,11 @@ describe('getPostsByCategory', () => {
     expect(posts.length).toBeGreaterThan(0);
   });
 
+  it('returns posts for URL-encoded Chinese category names', () => {
+    const posts = getPostsByCategory(encodeURIComponent('数据库'));
+    expect(posts.length).toBeGreaterThan(0);
+  });
+
   it('returns empty array for non-existent category', () => {
     const posts = getPostsByCategory('不存在的分类');
     expect(posts).toEqual([]);
@@ -109,6 +114,10 @@ describe('isValidCategory', () => {
     for (const c of cats) {
       expect(isValidCategory(c.slug)).toBe(true);
     }
+  });
+
+  it('returns true for URL-encoded Chinese category names', () => {
+    expect(isValidCategory(encodeURIComponent('前端开发'))).toBe(true);
   });
 
   it('returns false for non-existent category', () => {

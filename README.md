@@ -46,7 +46,7 @@ NEXT_PUBLIC_GISCUS_CATEGORY_ID=your_category_id
 .
 ├─ content/                  # 内容源
 │  ├─ about.mdx              # 关于页
-│  └─ blog/*.mdx             # 博客文章（10 篇）
+│  └─ blog/*.mdx             # 博客文章（14 篇）
 ├─ data/
 │  └─ projects.json          # 作品集数据
 ├─ docs/                     # 项目文档
@@ -56,7 +56,7 @@ NEXT_PUBLIC_GISCUS_CATEGORY_ID=your_category_id
 │  ├─ css-conventions.md     # CSS 范式规范
 │  ├─ cache-components-migration.md  # Cache Components 迁移指南
 │  └─ 项目审查与改进文档.md   # 历史审查记录
-├─ e2e/                      # Playwright E2E 测试（4 文件 / 30 用例）
+├─ e2e/                      # Playwright E2E 测试（4 文件 / 32 用例）
 │  ├─ home.spec.ts           # 首页测试
 │  ├─ blog.spec.ts           # 博客列表与详情测试
 │  ├─ navigation.spec.ts     # 主题切换 / 项目 / 标签 / 关于 / 404
@@ -144,8 +144,8 @@ CSS 自定义属性 + Tailwind v4 `@theme` 令牌，分 5 层：
 
 | 层级 | 工具 | 数量 | 覆盖范围 |
 | --- | --- | --- | --- |
-| 单元/集成 | Vitest + Testing Library | 115 用例 | lib 数据层 / 组件交互 / 页面渲染 |
-| E2E | Playwright | 30 用例 | 首页 / 博客 / 导航 / 主题 / 作品 / 标签 / RSS / Sitemap |
+| 单元/集成 | Vitest + Testing Library | 197 用例 | lib 数据层 / 组件交互 / 页面渲染 |
+| E2E | Playwright | 32 用例 | 首页 / 博客 / 导航 / 主题 / 作品 / 标签 / 分类 / RSS / Sitemap |
 
 ```bash
 pnpm test          # 运行单元测试

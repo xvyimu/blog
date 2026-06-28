@@ -17,7 +17,7 @@ export interface ContentSource {
 /** 基于文件系统的 ContentSource 实现，以 process.cwd() 为根。 */
 export const filesystemSource: ContentSource = {
   readFile(relativePath: string): string | null {
-    const fullPath = path.join(process.cwd(), relativePath);
+    const fullPath = path.join(/* turbopackIgnore: true */ process.cwd(), relativePath);
     try {
       return fs.readFileSync(fullPath, 'utf-8');
     } catch (e) {
@@ -27,7 +27,7 @@ export const filesystemSource: ContentSource = {
   },
 
   readDir(relativePath: string): string[] | null {
-    const fullPath = path.join(process.cwd(), relativePath);
+    const fullPath = path.join(/* turbopackIgnore: true */ process.cwd(), relativePath);
     try {
       return fs.readdirSync(fullPath);
     } catch (e) {
@@ -38,7 +38,7 @@ export const filesystemSource: ContentSource = {
   },
 
   getMtime(relativePath: string): number | null {
-    const fullPath = path.join(process.cwd(), relativePath);
+    const fullPath = path.join(/* turbopackIgnore: true */ process.cwd(), relativePath);
     try {
       return fs.statSync(fullPath).mtimeMs;
     } catch (e) {
