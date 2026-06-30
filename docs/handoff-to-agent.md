@@ -69,12 +69,34 @@
 |------|------|------|
 | TypeScript | 0 errors | `tsc --noEmit` |
 | Lint | 0 errors | `eslint` |
-| 单元测试 | 221 tests, 23 files 全绿 | `vitest run` |
-| E2E 测试 | 38 tests, 4 spec files 全绿 | `node scripts/run-e2e.mjs` |
-| 生产构建 | 编译成功 | `pnpm build` |
+| 单元测试 | 291 tests, 31 files 全绿 | `vitest run` |
+| E2E 测试 | 42 tests, 4 spec files 全绿 | `node scripts/run-e2e.mjs` |
+| 生产构建 | 编译成功 (91 静态页面) | `pnpm build` |
 | 代码清洁 | 无 `.only`/`.skip`/`@ts-*`/`TODO`/`FIXME` | 已验证 |
-| 无障碍 | 5 处 `prefers-reduced-motion: reduce` 覆盖 | 已验证 |
+| 无障碍 | `prefers-reduced-motion: reduce` 覆盖 | 已验证 |
 | 远程图片 | 无远程图片依赖 | 已验证 |
+
+> ⚠️ 关键约束:Tailwind v4 的 `@tailwindcss/postcss` 会静默丢弃 `globals.css` 中的 `@import "./styles/xxx.css"` 语句。CSS 模块必须在 `layout.tsx` 顶部显式 import,详见 `docs/specs/2026-06-29-css-import-fix-design.md`。
+
+### 全站背景架构（2026-06-29 重构）
+
+首页 EditorialHero 的深色 stage 视觉已扩展为全站共享背景,采用三层分离架构:
+
+| 层 | 实现 | 渲染时机 | 职责 |
+|----|------|----------|------|
+| 静态背景层 | `body::before/after` (CSS 伪元素) | SSG (HTML+CSS 即时) | 渐变 + 紫色光晕 + 1px 网格遮罩 |
+| 装饰元素层 | `<SiteBackdropStage />` (server component) | SSG (HTML 静态 DOM) | 飞机条 × 2 + 网格圈 + 代码块 × 2 |
+| 视差跟随层 | `<SiteBackdropParallax />` (client component, returns null) | CSR (useEffect 副作用) | mousemove → `--parallax-x/y` CSS 变量 |
+
+关键文件:
+- `src/components/layout/SiteBackdropStage.tsx` (server component, aria-hidden)
+- `src/components/layout/SiteBackdropParallax.tsx` (client component, returns null)
+- `src/app/styles/backdrop.css` (`body::before/after` + `.site-backdrop__stage` 选择器)
+- `src/app/layout.tsx` (接入三层 + 显式 import 10 个 CSS 模块)
+
+设计文档:
+- `docs/specs/2026-06-29-site-backdrop-architecture-design.md` (三层架构设计)
+- `docs/specs/2026-06-29-css-import-fix-design.md` (CSS 加载机制修复)
 
 ---
 
@@ -87,23 +109,34 @@ D:\blog\
 ├── src/
 │   ├── app/                    # Next.js App Router 页面
 │   │   ├── page.tsx            # 首页
-│   │   ├── layout.tsx          # 根布局（Header + Footer + 字体 + CSP nonce）
-│   │   └── globals.css         # 全部 CSS（令牌 + 组件 + 响应式）
+│   │   ├── layout.tsx          # 根布局（Header + Footer + 字体 + CSP nonce + CSS 显式 import）
+│   │   ├── globals.css         # CSS 入口（仅 @tailwindcss + @plugin,12 行）
+│   │   └── styles/             # 语义化 CSS 模块（每个 ≤500 行,共 10 个）
+│   │       ├── tokens.css          # 设计令牌（明暗主题变量、间距、阴影）
+│   │       ├── base.css            # 全局基础（skip-link、header、footer、reduced-motion）
+│   │       ├── components.css     # 通用组件（card、button、section、hero 容器）
+│   │       ├── blog-ui.css        # 博客 UI（SearchBar、TOC、CodeBlock、ThemeToggle）
+│   │       ├── backdrop.css       # 背景层（body::before/after + .site-backdrop__stage）
+│   │       ├── home.css           # 首页（Manifesto、ReadingPath、ArticleRail、CTA）
+│   │       ├── prose.css         # 文章排版（.prose、code block）
+│   │       ├── project-detail.css # 项目详情
+│   │       ├── animations.css    # 动画（reveal、fade-in-up、loading-intro）
+│   │       └── responsive.css     # 响应式断点（最后加载,覆盖前面）
 │   ├── components/
 │   │   ├── home/               # 首页专属组件（8 个）
 │   │   ├── blog/               # 博客组件（BlogCard/SearchBar/Pagination/CodeBlock 等）
-│   │   ├── layout/             # Header/Footer
+│   │   ├── layout/             # Header/Footer + SiteBackdropStage + SiteBackdropParallax
 │   │   ├── ui/                 # ThemeToggle/ParticleCanvas/BackToTop/MagneticCard
 │   │   ├── projects/           # ProjectCard
 │   │   └── comments/           # Giscus
 │   ├── lib/                    # 数据层
-│   │   ├── posts.ts            # 文章读取/缓存/筛选
+│   │   ├── posts/              # 文章模块（schema/repository/query/search-text,4 子模块）
 │   │   ├── projects.ts         # 项目数据
 │   │   ├── links.ts            # 导航收藏数据（6 分类 67 条）
 │   │   ├── tags.ts             # 标签聚合
 │   │   ├── categories.ts       # 分类聚合
 │   │   ├── constants.ts        # SITE_CONFIG / CONTENT_DIR / TAG_TO_CATEGORY
-│   │   ├── cache.ts            # 内存缓存工具（mtime 失效）
+│   │   ├── cache.ts            # 内存缓存工具 + resetAllCaches() 测试隔离
 │   │   ├── jsonld.ts           # JSON-LD 结构化数据
 │   │   └── utils.ts            # 工具函数
 │   └── types/
@@ -113,14 +146,19 @@ D:\blog\
 ├── data/
 │   └── projects.json           # 6 个项目
 ├── e2e/                        # 4 个 Playwright 测试文件
-│   ├── home.spec.ts            # 11 tests
+│   ├── home.spec.ts            # 15 tests（含 4 个 backdrop 测试）
 │   ├── blog.spec.ts            # 9 tests
 │   ├── navigation.spec.ts      # 10 tests
 │   └── extended.spec.ts        # 8 tests
 ├── docs/                       # 设计/规范文档
+│   ├── specs/                  # 设计文档目录
+│   │   ├── 2026-06-29-site-backdrop-architecture-design.md
+│   │   └── 2026-06-29-css-import-fix-design.md
 │   ├── salesdex-inspired-redesign.md
 │   ├── css-conventions.md
-│   └── cache-components-migration.md
+│   ├── cache-components-migration.md
+│   ├── performance-baseline.md
+│   └── handoff-to-agent.md
 ├── next.config.ts              # viewTransition + security headers
 ├── vitest.config.ts            # jsdom + @ alias
 ├── playwright.config.ts        # :3001 + chromium

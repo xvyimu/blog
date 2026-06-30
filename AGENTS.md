@@ -34,8 +34,19 @@ src/
 │   ├── projects/[id]/      # Project detail
 │   ├── tags/[tag]/         # Tag archive
 │   ├── about/              # About page
-│   ├── styles/             # CSS files (tokens / layout / components / prose / responsive)
-│   ├── layout.tsx          # Root layout (fonts, theme, skip-link, CSP nonce)
+│   ├── styles/             # Semantic CSS modules (10 files, each ≤500 lines)
+│   │   ├── tokens.css      # Design tokens (light/dark theme vars, spacing, shadows)
+│   │   ├── base.css        # Global base (skip-link, header, footer, reduced-motion)
+│   │   ├── components.css   # Generic components (card, button, section, hero container)
+│   │   ├── blog-ui.css     # Blog UI (SearchBar, TOC, CodeBlock, ThemeToggle)
+│   │   ├── backdrop.css    # Backdrop layer (body::before/after + .site-backdrop__stage)
+│   │   ├── home.css        # Home (Manifesto, ReadingPath, ArticleRail, CTA)
+│   │   ├── prose.css      # Article typography (.prose, code block)
+│   │   ├── project-detail.css # Project detail
+│   │   ├── animations.css # Animations (reveal, fade-in-up, loading-intro)
+│   │   └── responsive.css  # Responsive breakpoints (loaded last, overrides above)
+│   ├── globals.css         # CSS entry (Tailwind v4 only, ~12 lines, NO @import chain)
+│   ├── layout.tsx          # Root layout (fonts, theme, skip-link, CSP nonce, CSS imports)
 │   ├── manifest.ts         # PWA manifest (from constants.ts)
 │   ├── page.tsx            # Home page
 │   ├── sitemap.ts          # Dynamic sitemap
@@ -44,18 +55,18 @@ src/
 │   └── error.tsx           # Error boundary (production-safe)
 ├── components/
 │   ├── blog/               # Blog-specific (SearchBar, BlogCard, CodeBlock, TOC, etc.)
-│   ├── layout/             # Header, Footer
+│   ├── layout/             # Header, Footer, SiteBackdropStage (server), SiteBackdropParallax (client)
 │   ├── projects/           # ProjectCard
 │   ├── comments/           # Giscus comments
 │   └── ui/                 # Reusable UI (ThemeToggle, BackToTop, MagneticCard, ParticleCanvas)
 ├── lib/                    # Business logic
-│   ├── posts.ts            # Post CRUD (uses createCache<T>)
+│   ├── posts/              # Post modules (schema, repository, query, search-text — 4 submodules)
 │   ├── projects.ts         # Project data (uses createCache<T>, zod validation)
 │   ├── tags.ts             # Tag management
 │   ├── about.ts            # About page content
 │   ├── content-source.ts   # ContentSource interface (fs abstraction)
 │   ├── parse-frontmatter.ts # MDX frontmatter parser (js-yaml 4.x, gray-matter parity)
-│   ├── cache.ts            # createCache<T> utility
+│   ├── cache.ts            # createCache<T> utility + resetAllCaches() for test isolation
 │   ├── storage.ts          # safeLocalStorage wrapper (SSR-safe)
 │   ├── jsonld.ts           # JSON-LD structured data
 │   ├── constants.ts        # Site config, content dirs, page size
@@ -66,7 +77,9 @@ src/
 ## Conventions
 
 - **CSS**: BEM for structural components, Tailwind for utilities. See `docs/css-conventions.md`
-- **Caching**: Use `createCache<T>` from `lib/cache.ts`. See `docs/cache-components-migration.md`
+- **CSS Module Loading**: ⚠️ Tailwind v4 `@tailwindcss/postcss` silently drops `@import "./styles/xxx.css"` in `globals.css`. All CSS modules MUST be explicitly imported in `layout.tsx` (order: tokens → base → components → blog-ui → backdrop → home → prose → project-detail → animations → responsive last). See `docs/specs/2026-06-29-css-import-fix-design.md`
+- **Background Architecture**: Three-layer separation — `body::before/after` (CSS pseudo-elements, SSG) + `<SiteBackdropStage />` (server component, SSG static DOM) + `<SiteBackdropParallax />` (client component, returns null, only side effects). See `docs/specs/2026-06-29-site-backdrop-architecture-design.md`
+- **Caching**: Use `createCache<T>` from `lib/cache.ts`. Use `resetAllCaches()` for test isolation. See `docs/cache-components-migration.md`
 - **Testing**: Unit tests in `*.test.tsx` alongside components. E2E in `e2e/` directory
 - **Security**: CSP nonce via `src/proxy.ts` (per-request). Security headers in `next.config.ts`. No remote images (`remotePatterns: []`)
 - **Fonts**: `next/font/google` only. CSS variables: `--font-noto-sans-sc`, `--font-jetbrains-mono`
@@ -77,9 +90,9 @@ src/
 
 ```bash
 pnpm dev          # Start dev server (port 3000)
-pnpm build        # Generate RSS + production build
-pnpm test         # Run unit/integration tests (198 tests)
-pnpm test:e2e     # Run E2E tests (32 tests, auto-starts dev server on port 3001)
+pnpm build        # Generate RSS + production build (91 static pages)
+pnpm test         # Run unit/integration tests (291 tests, 31 files)
+pnpm test:e2e     # Run E2E tests (42 tests, auto-starts dev server on port 3001)
 pnpm lint         # ESLint
 pnpm analyze     # Bundle size analysis
 ```
