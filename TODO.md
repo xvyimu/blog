@@ -1,7 +1,17 @@
 # 西江月博客 · 项目待办
 
-> 当前状态: 511 tests / 59 files / 43 E2E 全绿；2026-07-03 复查发现的 4 个稳定性问题已修复并完成回归验证。
-> 更新: 2026-07-03
+> 当前状态: 523 tests / 60 files / 43 E2E 全绿；shadcn 全局重构已推送 master；CI Lighthouse 首页性能 0.84 < 0.85（见下方 P0）
+> 更新: 2026-07-04
+
+---
+
+## P0 · Lighthouse 性能阈值回归
+
+> CI 失败: `categories.performance` 首页 0.84 < 0.85（差 0.01）
+> 根因: shadcn 组件迁移（CuratedLinksPreview → Card/Badge/Button/Separator）+ RevealOnScroll 增加额外 DOM/CSS 层级
+> 排查方向: 首页渲染路径、Reply 评分策略、shadcn 组件额外开销
+
+- [ ] Lighthouse 首页性能阈值调整或优化：CI 中首页 `categories.performance` 降到 0.84，阈值当前 0.85。选项 A：降阈值到 0.80（最快）、选项 B：优化首页渲染路径让分数回 0.85+
 
 ---
 
