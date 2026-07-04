@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import { Project } from '@/types';
 import { CONTENT_DIR } from './content-dirs';
-import { createCache } from './cache';
 import type { ContentSource } from './content-source';
 import { filesystemSource } from './content-source';
+import { createJsonContentRepository } from './json-content-repository';
 
 /**
  * projects 模块 — 读取 + 校验 data/projects.json.
@@ -46,27 +46,16 @@ export interface ProjectsRepository {
 }
 
 export function createProjectsRepository(source: ContentSource): ProjectsRepository {
-  const cache = createCache<Project[]>({
-    watchPath: CONTENT_DIR.projects,
+  const content = createJsonContentRepository<Project[]>({
     source,
+    path: CONTENT_DIR.projects,
+    label: 'projects',
+    fallback: () => [],
+    parse: parseProjects,
   });
 
   function getAll(): Project[] {
-    return cache.getOrCompute(() => {
-      const raw = source.readFile(CONTENT_DIR.projects);
-      if (raw === null) {
-        console.warn(`[projects] 数据文件不存在: ${CONTENT_DIR.projects}`);
-        return [];
-      }
-      let data: unknown;
-      try {
-        data = JSON.parse(raw);
-      } catch (e) {
-        console.error(`[projects] JSON 解析失败: ${CONTENT_DIR.projects}`, e);
-        return [];
-      }
-      return parseProjects(data);
-    });
+    return content.getAll();
   }
 
   function getFeatured(): Project[] {

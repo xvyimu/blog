@@ -13,7 +13,7 @@ A personal blog built with Next.js 16.2 (App Router), React 19, and Tailwind CSS
 - **Content**: MDX with custom frontmatter parser (`lib/parse-frontmatter.ts`, js-yaml 4.x), next-mdx-remote
 - **Syntax Highlighting**: Shiki via rehype-pretty-code
 - **Search**: fuse.js (client-side fuzzy search)
-- **Testing**: Vitest (unit/integration, 514 tests, 63 files), Playwright (E2E, 43 tests, 4 spec files)
+- **Testing**: Vitest (unit/integration, 519 tests, 65 files), Playwright (E2E, 43 tests, 4 spec files)
 - **CI**: GitHub Actions (lint / test / tsc / build / bundle-budget / e2e)
 - **Deployment**: Vercel
 
@@ -76,6 +76,7 @@ src/
 │   ├── about.ts            # About page content
 │   ├── links.ts            # Curated links repository (reads data/links.json)
 │   ├── content-source.ts   # ContentSource interface (fs abstraction) + createPostRepository factory
+│   ├── json-content-repository.ts # Shared JSON read/parse/cache repository factory
 │   ├── parse-frontmatter.ts # MDX frontmatter parser (js-yaml 4.x, gray-matter parity)
 │   ├── route-adapter.ts    # createDynamicRoute adapter for [slug|id|tag|category] routes
 │   ├── metadata.ts         # SEO metadata helpers
@@ -84,7 +85,7 @@ src/
 │   ├── storage.ts          # safeLocalStorage wrapper (SSR-safe)
 │   ├── jsonld.ts           # JSON-LD structured data
 │   ├── site.ts             # Site config and env-aware site URL
-│   ├── content-dirs.ts     # Content file paths and page size
+│   ├── content-dirs.ts     # Content file paths, Vercel tracing includes, and page size
 │   └── utils.ts            # slugify, formatDate
 └── types/                  # TypeScript types (PostMeta, PostFull, Project, TagInfo)
 ```
@@ -100,14 +101,14 @@ src/
 - **Security**: CSP headers via `src/proxy.ts` (per-request nonce). `layout.tsx` and JSON-LD scripts read `x-nonce` via `src/lib/csp.ts`, so routes render dynamically on demand. Security headers also live in `next.config.ts`. No remote images (`remotePatterns: []`)
 - **Fonts**: `next/font/google` only. CSS variables: `--font-noto-sans-sc`, `--font-jetbrains-mono`
 - **SEO**: JSON-LD via `lib/jsonld.ts`. OG images via `opengraph-image.tsx` file convention
-- **Site Config**: `SITE_CONFIG` lives in `src/lib/site.ts`; content paths and `PAGE_SIZE` live in `src/lib/content-dirs.ts`
+- **Site Config**: `SITE_CONFIG` lives in `src/lib/site.ts`; content paths, Vercel tracing includes, and `PAGE_SIZE` live in `src/lib/content-dirs.ts`
 
 ## Commands
 
 ```bash
 pnpm dev          # Start dev server (port 3000; Turbopack)
 pnpm build        # Generate RSS + production build (93 page artifacts; routes are dynamic due CSP nonce)
-pnpm test         # Run unit/integration tests (514 tests, 63 files)
+pnpm test         # Run unit/integration tests (519 tests, 65 files)
 pnpm test:e2e     # Run E2E tests (43 tests, 4 spec files; auto-starts dev/prod server on port 3001)
 pnpm test:e2e:raw # Playwright raw (pass-through flags, e.g. --ui)
 pnpm lint         # ESLint

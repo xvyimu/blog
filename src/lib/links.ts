@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import type { LinkCategory } from '@/types';
 import { CONTENT_DIR } from './content-dirs';
-import { createCache } from './cache';
 import type { ContentSource } from './content-source';
 import { filesystemSource } from './content-source';
+import { createJsonContentRepository } from './json-content-repository';
 
 /**
  * links 模块 — 读取 + 校验 data/links.json.
@@ -37,27 +37,16 @@ export interface LinksRepository {
 }
 
 export function createLinksRepository(source: ContentSource): LinksRepository {
-  const cache = createCache<LinkCategory[]>({
-    watchPath: CONTENT_DIR.links,
+  const content = createJsonContentRepository<LinkCategory[]>({
     source,
+    path: CONTENT_DIR.links,
+    label: 'links',
+    fallback: () => [],
+    parse: parseLinks,
   });
 
   function getAllCategories(): LinkCategory[] {
-    return cache.getOrCompute(() => {
-      const raw = source.readFile(CONTENT_DIR.links);
-      if (raw === null) {
-        console.warn(`[links] 数据文件不存在: ${CONTENT_DIR.links}`);
-        return [];
-      }
-      let data: unknown;
-      try {
-        data = JSON.parse(raw);
-      } catch (e) {
-        console.error(`[links] JSON 解析失败: ${CONTENT_DIR.links}`, e);
-        return [];
-      }
-      return parseLinks(data);
-    });
+    return content.getAll();
   }
 
   function getCategoryById(id: string): LinkCategory | null {

@@ -115,7 +115,8 @@ public/* + RSS + sitemap + metadata
 该文件已删除。当前替代入口：
 
 - `src/lib/site.ts`：站点名称、描述、作者、社交链接、Giscus 配置、站点 URL 解析
-- `src/lib/content-dirs.ts`：内容目录常量、分页大小
+- `src/lib/content-dirs.ts`：内容目录常量、Vercel trace include、分页大小
+- `src/lib/json-content-repository.ts`：JSON 内容读取、解析、缓存的共享 repository factory
 - `src/lib/category-rules-data.ts`：标签到分类的映射数据
 
 下方涉及 `constants.ts` 的旧描述仅作历史背景参考。

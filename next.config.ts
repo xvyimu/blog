@@ -1,5 +1,6 @@
 import type { NextConfig } from 'next';
 import bundleAnalyzer from '@next/bundle-analyzer';
+import { CONTENT_TRACE_INCLUDES } from './src/lib/content-dirs';
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
@@ -41,9 +42,7 @@ const nextConfig: NextConfig = {
    * Vercel's serverless file tracing cannot infer those dynamic paths, so keep
    * them in every route bundle explicitly.
    */
-  outputFileTracingIncludes: {
-    '/**': ['content/**/*', 'data/**/*'],
-  },
+  outputFileTracingIncludes: CONTENT_TRACE_INCLUDES,
   /* Security headers */
   async headers() {
     return [
