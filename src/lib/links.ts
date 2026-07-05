@@ -12,10 +12,33 @@ import { createJsonContentRepository } from './json-content-repository';
  * 默认实例 linksRepository 使用 filesystemSource.
  */
 
+function hasTrackingOrAffiliateParam(url: string): boolean {
+  let parsedUrl: URL;
+  try {
+    parsedUrl = new URL(url);
+  } catch {
+    return false;
+  }
+
+  return Array.from(parsedUrl.searchParams.keys()).some((key) => {
+    const normalizedKey = key.toLowerCase();
+    return (
+      normalizedKey.startsWith('utm_') ||
+      ['aff', 'ref', 'referral', 'coupon', 'partner'].includes(normalizedKey)
+    );
+  });
+}
+
 const LinkItemSchema = z.object({
   title: z.string(),
-  url: z.string().url(),
+  url: z
+    .string()
+    .url()
+    .refine((url) => !hasTrackingOrAffiliateParam(url), {
+      message: 'Link URLs must not contain affiliate or tracking parameters',
+    }),
   description: z.string(),
+  tags: z.array(z.string().trim().min(1)).max(6).optional(),
 });
 
 const LinkCategorySchema = z.object({

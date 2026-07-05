@@ -50,7 +50,8 @@ NEXT_PUBLIC_GISCUS_CATEGORY_ID=your_category_id
 │  ├─ about.mdx              # 关于页
 │  └─ blog/*.mdx             # 博客文章（14 篇）
 ├─ data/
-│  └─ projects.json          # 作品集数据
+│  ├─ projects.json          # 作品集数据
+│  └─ links.json             # 导航收藏数据
 ├─ docs/                     # 项目文档
 │  ├─ overview.md            # 文档导航
 │  ├─ architecture.md        # 架构与模块职责
@@ -58,11 +59,12 @@ NEXT_PUBLIC_GISCUS_CATEGORY_ID=your_category_id
 │  ├─ css-conventions.md     # CSS 范式规范
 │  ├─ cache-components-migration.md  # Cache Components 迁移指南
 │  └─ 项目审查与改进文档.md   # 历史审查记录
-├─ e2e/                      # Playwright E2E 测试（4 文件 / 43 用例）
+├─ e2e/                      # Playwright E2E 测试（5 文件 / 47 用例）
 │  ├─ home.spec.ts           # 首页测试
 │  ├─ blog.spec.ts           # 博客列表与详情测试
 │  ├─ navigation.spec.ts     # 主题切换 / 项目 / 标签 / 关于 / 404
-│  └─ extended.spec.ts       # 作品详情 / 标签详情 / RSS / Sitemap / robots
+│  ├─ extended.spec.ts       # 作品详情 / 标签详情 / RSS / Sitemap / robots
+│  └─ mobile.spec.ts         # 移动端关键流程
 ├─ public/
 │  ├─ images/projects/       # 项目封面图
 │  ├─ feed.xml               # RSS（构建前由脚本生成）
@@ -152,10 +154,10 @@ CSS 自定义属性 + Tailwind v4 `@theme` 令牌，当前按 11 个显式导入
 
 ## 测试
 
-| 层级      | 工具                     | 数量               | 覆盖范围                                                              |
-| --------- | ------------------------ | ------------------ | --------------------------------------------------------------------- |
-| 单元/集成 | Vitest + Testing Library | 519 用例 / 65 文件 | lib 数据层 / 组件交互 / 页面渲染                                      |
-| E2E       | Playwright               | 43 用例 / 4 文件   | 首页 / 博客 / 导航 / 主题 / 作品 / 标签 / 分类 / 专题 / RSS / Sitemap |
+| 层级      | 工具                     | 数量               | 覆盖范围                                                                       |
+| --------- | ------------------------ | ------------------ | ------------------------------------------------------------------------------ |
+| 单元/集成 | Vitest + Testing Library | 523 用例 / 65 文件 | lib 数据层 / 组件交互 / 页面渲染                                               |
+| E2E       | Playwright               | 47 用例 / 5 文件   | 首页 / 博客 / 导航 / 主题 / 作品 / 标签 / 分类 / 专题 / RSS / Sitemap / 移动端 |
 
 ```bash
 pnpm test          # 运行单元测试

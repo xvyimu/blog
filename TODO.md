@@ -1,6 +1,6 @@
 # 西江月博客 · 项目待办
 
-> 当前状态: 519 tests / 65 files / 43 E2E 全绿；CI Lighthouse / deploy / production content smoke 全绿；线上域名 `https://incca.ccwu.cc` 可用
+> 当前状态: 523 tests / 65 files / 47 E2E 全绿；CI Lighthouse / deploy / production content smoke 全绿；线上域名 `https://incca.ccwu.cc` 可用
 > 更新: 2026-07-05
 
 ---
@@ -25,7 +25,7 @@
 
 - [x] 先做接手文档：新增 Claude Code handoff design，并同步 `docs/handoff-to-agent.md`
 - [x] 再做稳定性修复：分页、LoadingIntro、分类一致性、文章徽章条件
-- [ ] 继续体验升级方向：优先 `/links`、博客列表、文章详情、移动端，不扩大首页动画复杂度
+- [x] 继续体验升级方向：`/links` 内容与标签、文章详情 Giscus、移动端 header/search/article/links 覆盖已完成（2026-07-05），不扩大首页动画复杂度
 
 #### 已完成稳定性修复
 
@@ -36,14 +36,14 @@
 
 #### 当前测试缺口
 
-- [ ] Giscus script 属性与 CSP/lazy-load 真实浏览器验证
-- [ ] 移动端 Playwright 覆盖：header、search、article、links
+- [x] Giscus script 属性与 CSP/lazy-load 真实浏览器验证（`e2e/mobile.spec.ts`）
+- [x] 移动端 Playwright 覆盖：header、search、article、links（`e2e/mobile.spec.ts`）
 
 ### W2: links.ts 纯数据迁移 JSON ✅ 已完成 (2026-07-01)
 
 **设计**: [`docs/specs/2026-06-30-links-json-migration-design.md`](docs/specs/2026-06-30-links-json-migration-design.md)
 
-- [x] `data/links.json` 新建 — 9 分类 111 条纯数据
+- [x] `data/links.json` 新建 — 当前 10 分类 123 条纯数据，支持可选 `tags`
 - [x] `src/lib/links.ts` 重写 — Zod schema + ContentSource 读取 + 缓存
 - [x] `src/lib/links.test.ts` 新建 — `parseLinks` 纯函数单元测试
 - [x] 调用方迁移: `page.tsx` / `page.test.tsx` 改用 `getAllLinkCategories()`
@@ -90,7 +90,8 @@
 
 ### 已完成内容增强：
 
-- [x] 数据与内容批次收敛 — `data/links.json` 9 分类 111 条已结构化校验，URL 无重复且无 aff/ref/utm 等追踪参数；内容维护文档已同步到 `site.ts` / `content-dirs.ts`
+- [x] 数据与内容批次收敛 — `data/links.json` 10 分类 123 条已结构化校验，URL 无重复且无 aff/ref/utm 等追踪参数；内容维护文档已同步到 `site.ts` / `content-dirs.ts`
+- [x] 收藏库 2.0 — 新增 VPS 官网入口、self-hosted 目录资源、博客项目与设计参考分类，并在卡片中展示可选 metadata tags
 - [x] RSS 丰富度 — JSON Feed 输出 `feed_url` / `tags` / `date_published` / `date_modified`，RSS 输出站点级与文章级分类
 - [x] 文章交叉链接 — 文章详情底部已有“相关文章”，规则为共享 tag 优先，同 category / 同 series 加权补充；页面测试已覆盖
 - [x] 文章系列 / 专题页增强 — 新增 `/series` 与 `/series/[series]`，主导航、sitemap、SEO 检查、Vitest 与 E2E 均已覆盖
@@ -130,4 +131,4 @@
 - [ ] 图片优化: 统一 next/image 配置 + 预生成 blur data URL
 - [ ] 性能基线: 回填 Speed Insights p75 基线 (依赖生产流量)
 - [ ] mobile Lighthouse preset 评估
-- [ ] 导航页 `/links` UI 迭代
+- [x] 导航页 `/links` UI 迭代：metadata tags + 10 分类 123 条收藏已落地

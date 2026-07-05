@@ -37,6 +37,7 @@ describe('Giscus', () => {
     const { container } = render(<Giscus />);
     const sentinel = container.firstElementChild;
     expect(sentinel?.className).toContain('mt-16');
+    expect(sentinel).toHaveAttribute('data-testid', 'giscus-comments');
   });
 
   it('applies giscus-repo attribute when visible', () => {

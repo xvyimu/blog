@@ -13,6 +13,7 @@ const categories: LinkCategory[] = [
         title: 'OpenAI',
         url: 'https://www.openai.com/',
         description: '模型、API 与产品入口',
+        tags: ['model', 'api'],
       },
       {
         title: 'Claude',
@@ -61,6 +62,13 @@ describe('LinksDirectory', () => {
     expect(screen.getByText('2 个站点')).toHaveAttribute('data-slot', 'badge');
     expect(screen.getByText('openai.com')).toBeInTheDocument();
     expect(screen.getByText('hetzner.com')).toBeInTheDocument();
+  });
+
+  it('renders optional link tags as metadata badges', () => {
+    render(<LinksDirectory categories={categories} />);
+
+    expect(screen.getByText('model')).toHaveAttribute('data-slot', 'badge');
+    expect(screen.getByText('api')).toHaveAttribute('data-slot', 'badge');
   });
 
   it('keeps link cards as safe external links', () => {

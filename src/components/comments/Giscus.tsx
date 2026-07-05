@@ -138,10 +138,13 @@ export default function Giscus({
   }, [visible]);
 
   return (
-    <div ref={sentinelRef} className="mt-16">
+    <div ref={sentinelRef} className="mt-16" data-testid="giscus-comments">
       {visible && <div ref={containerRef} />}
       {!visible && (
-        <div className="flex items-center justify-center py-12 text-[var(--text-dim)] text-sm">
+        <div
+          className="flex items-center justify-center py-12 text-[var(--text-dim)] text-sm"
+          data-testid="giscus-placeholder"
+        >
           滚动到此处加载评论
         </div>
       )}

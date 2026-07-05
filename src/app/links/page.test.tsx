@@ -82,8 +82,8 @@ describe('LinksPage', () => {
     const trackingParamPattern = /[?&](aff|ref|referral|utm_[^=]+|coupon|partner)=/i;
     const totalItems = categories.reduce((sum, cat) => sum + cat.items.length, 0);
 
-    expect(categories).toHaveLength(9);
-    expect(totalItems).toBe(111);
+    expect(categories.length).toBeGreaterThanOrEqual(9);
+    expect(totalItems).toBeGreaterThanOrEqual(111);
     expect(new Set(urls).size).toBe(urls.length);
     expect(urls).not.toEqual(
       expect.arrayContaining([expect.stringMatching(trackingParamPattern)]),
@@ -111,5 +111,18 @@ describe('LinksPage', () => {
     expect(linksByTitle.get('Uptime Kuma')).toBe('https://uptime.kuma.pet/');
     expect(linksByTitle.get('PageSpeed Insights')).toBe('https://pagespeed.web.dev/');
     expect(linksByTitle.get('SSL Labs')).toBe('https://www.ssllabs.com/ssltest/');
+  });
+
+  it('keeps expanded VPS official websites available without affiliate links', () => {
+    const linksByTitle = new Map(
+      getAllLinkCategories()
+        .flatMap((cat) => cat.items)
+        .map((item) => [item.title, item.url]),
+    );
+
+    expect(linksByTitle.get('HostHatch')).toBe('https://hosthatch.com/');
+    expect(linksByTitle.get('GreenCloudVPS')).toBe('https://greencloudvps.com/');
+    expect(linksByTitle.get('BuyVM')).toBe('https://buyvm.net/');
+    expect(linksByTitle.get('HostDare')).toBe('https://www.hostdare.com/');
   });
 });

@@ -37,6 +37,26 @@ describe('parseLinks', () => {
     expect(result[0].items).toHaveLength(1);
   });
 
+  it('preserves optional item tags for curated filtering context', () => {
+    const result = parseLinks([
+      {
+        id: 'vps',
+        title: 'VPS',
+        description: 'Official VPS provider links',
+        items: [
+          {
+            title: 'HostHatch',
+            url: 'https://hosthatch.com/',
+            description: 'Official VPS provider website',
+            tags: ['vps', 'global'],
+          },
+        ],
+      },
+    ]);
+
+    expect(result[0].items[0].tags).toEqual(['vps', 'global']);
+  });
+
   it('throws ZodError for missing required fields', () => {
     expect(() => parseLinks([{ id: 'incomplete' }])).toThrow();
   });
@@ -59,6 +79,25 @@ describe('parseLinks', () => {
           title: 'X',
           description: 'D',
           items: [{ title: 'Bad', url: 'not-a-url', description: 'D' }],
+        },
+      ]),
+    ).toThrow();
+  });
+
+  it('throws when a link contains affiliate or tracking parameters', () => {
+    expect(() =>
+      parseLinks([
+        {
+          id: 'vps',
+          title: 'VPS',
+          description: 'Official VPS provider links',
+          items: [
+            {
+              title: 'Tracked',
+              url: 'https://example.com/?utm_source=newsletter&aff=123',
+              description: 'Tracked link',
+            },
+          ],
         },
       ]),
     ).toThrow();

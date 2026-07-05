@@ -40,9 +40,9 @@
 
 ---
 
-## 二、当前状态（截至 2026-07-03 稳定性修复完成）
+## 二、当前状态（截至 2026-07-05 上线运营收尾）
 
-> 说明：2026-07-03 代码复查确认的 4 个稳定性缺陷已修复，并通过 lint、typecheck、单元测试、生产构建与全量 E2E 回归。后续接手重点见“2.1 当前接手优先级”。
+> 说明：2026-07-03 代码复查确认的 4 个稳定性缺陷已修复；2026-07-05 完成收藏库 2.0、移动端 E2E 与 Giscus 浏览器级验证。后续接手重点见“2.1 当前接手优先级”。
 
 所有 Phase 已完成（基于 `docs/salesdex-inspired-redesign.md` 的 Phase 1-3）：
 
@@ -71,8 +71,8 @@
 | ---------- | ------------------------------------------------------ | -------------------------- |
 | TypeScript | 0 errors                                               | `tsc --noEmit`             |
 | Lint       | 0 errors                                               | `eslint`                   |
-| 单元测试   | 514 tests, 63 files 全绿                               | `vitest run`               |
-| E2E 测试   | 43 tests, 4 spec files 全绿                            | `node scripts/run-e2e.mjs` |
+| 单元测试   | 523 tests, 65 files 全绿                               | `vitest run`               |
+| E2E 测试   | 47 tests, 5 spec files 全绿                            | `node scripts/run-e2e.mjs` |
 | 生产构建   | 编译成功 (93 个页面工件；CSP nonce 使路由按需动态渲染) | `pnpm build`               |
 | 代码清洁   | 无 `.only`/`@ts-*`；仅保留数据缺失保护性 `test.skip`   | 已验证                     |
 | 无障碍     | `prefers-reduced-motion: reduce` 覆盖                  | 已验证                     |
@@ -80,14 +80,14 @@
 
 > ⚠️ 关键约束:Tailwind v4 的 `@tailwindcss/postcss` 会静默丢弃 `globals.css` 中的 `@import "./styles/xxx.css"` 语句。CSS 模块必须在 `layout.tsx` 顶部显式 import,详见 `docs/specs/2026-06-29-css-import-fix-design.md`。
 
-### 2.1 当前接手优先级（2026-07-03）
+### 2.1 当前接手优先级（2026-07-05）
 
 权威设计文档：`docs/superpowers/specs/2026-07-03-claude-code-handoff-design.md`。
 
 Claude Code 接手后按以下顺序推进：
 
 1. **Handoff readiness**：保持本文件、`TODO.md` 与当前缺陷列表一致。
-2. **Visual direction**：继续 SalesDex 风格转译，但优先 `/links`、博客列表、文章详情、移动端体验；不要继续扩大首页动画复杂度。
+2. **Visual direction**：继续低饱和、简洁、艺术感方向；`/links` 本轮已扩展为 10 分类 123 条收藏，后续只做小步视觉复查，不扩大首页动画复杂度。
 3. **Stability repair**：2026-07-03 已完成首批稳定性修复；后续新增行为仍需先补回归测试。
 
 2026-07-03 已完成的稳定性修复：
@@ -102,14 +102,14 @@ Claude Code 接手后按以下顺序推进：
 - `pnpm lint`
 - `pnpm typecheck`
 - `pnpm check:seo`
-- `pnpm test`（514 tests / 63 files）
+- `pnpm test`（523 tests / 65 files）
 - `pnpm build`（93 个页面工件）
-- `pnpm test:e2e -- e2e/blog.spec.ts`（pnpm 透传额外 `--` 后实际跑完全量 43 tests，全绿）
+- `pnpm test:e2e`（47 tests / 5 spec files，全绿）
 
 测试缺口：
 
-- Giscus 的真实 script 属性与 CSP/lazy-load 行为还缺浏览器级验证。
-- Playwright 当前只配置 Desktop Chrome；移动端 header/search/article/links 还缺 E2E 覆盖。
+- Giscus 的真实 script 属性与 CSP/lazy-load 行为已由 `e2e/mobile.spec.ts` 覆盖。
+- 移动端 header/search/article/links 已由 `e2e/mobile.spec.ts` 覆盖。
 
 ### 全站背景架构（2026-06-29 重构）
 
@@ -155,7 +155,7 @@ Claude Code 接手后按以下顺序推进：
 
 - `pnpm lint`
 - `pnpm typecheck`
-- `pnpm test`（514 tests / 63 files）
+- `pnpm test`（523 tests / 65 files）
 - `pnpm build`
 - Chrome 访问 `http://localhost:7897` 的 `/`、`/blog`、`/blog/docker-deploy-guide`、`/tags`、`/links`、`/projects/nav-site`，无 console error/warning、无横向溢出。
 
@@ -220,11 +220,12 @@ D:\blog\
 │   └── blog/                   # 14 篇 .mdx 文章
 ├── data/
 │   └── projects.json           # 6 个项目
-├── e2e/                        # 4 个 Playwright 测试文件
+├── e2e/                        # 5 个 Playwright 测试文件
 │   ├── home.spec.ts            # 15 tests（含 4 个 backdrop 测试）
 │   ├── blog.spec.ts            # 8 tests
 │   ├── navigation.spec.ts      # 10 tests
-│   └── extended.spec.ts        # 10 tests
+│   ├── extended.spec.ts        # 10 tests
+│   └── mobile.spec.ts          # 4 tests（移动端 header / search / article / links）
 ├── docs/                       # 设计/规范文档
 │   ├── handoff-to-agent.md     # ← 当前文档（权威架构来源）
 │   ├── architecture.md         # 历史架构概览（已标注部分过时,保留参考）
@@ -383,8 +384,8 @@ pnpm dev                    # → localhost:3000 (Turbopack)
 pnpm dev --port 3001        # 显式指定端口（E2E 默认用 3001）
 
 # 测试
-pnpm test                   # Vitest 单元测试（514 tests, 63 files）
-pnpm test:e2e               # Playwright E2E（43 tests, 4 spec files;自动启动 :3001）
+pnpm test                   # Vitest 单元测试（523 tests, 65 files）
+pnpm test:e2e               # Playwright E2E（47 tests, 5 spec files;自动启动 :3001）
 pnpm test:e2e:raw -- --ui   # 带 UI 模式调试
 
 # 构建/检查
@@ -431,11 +432,11 @@ pnpm analyze                # 生成 .next/analyze/
 ```bash
 cd D:\blog
 pnpm install                 # 确认依赖装得上（注意：pnpm v11 store 偶尔会损坏,见 Lessons Learned）
-pnpm test                    # 期望:514 tests / 63 files 全绿
+pnpm test                    # 期望:523 tests / 65 files 全绿
 pnpm lint                    # 期望:0 errors
 tsc --noEmit                 # 期望:0 errors
 pnpm build                   # 期望:生成 RSS + 93 个页面工件；build output 中页面为 ƒ Dynamic（CSP nonce 的预期结果）
-pnpm test:e2e                # 期望:43 tests / 4 spec files 全绿（首次会自动 build + start :3001）
+pnpm test:e2e                # 期望:47 tests / 5 spec files 全绿（首次会自动 build + start :3001）
 ```
 
 > 任一项失败时,先看 `project_memory.md` 的 Lessons Learned 段；再读 `docs/specs/` 下相关设计文档。
@@ -487,7 +488,7 @@ git -c http.proxy=socks5h://127.0.0.1:7897 -c https.proxy=socks5h://127.0.0.1:78
 - [ ] 跑通 7.2 的 5 条基线命令,全绿
 - [ ] 读完 7.3 的 6 份文档
 - [ ] 理解三层背景架构（body::before/after + SiteBackdropStage + SiteBackdropParallax）的职责分离
-- [ ] 理解 CSS 10 模块的加载顺序约束（tokens 最先,responsive 最后）
+- [ ] 理解 CSS 11 模块的加载顺序约束（tokens 最先,responsive 最后）
 - [ ] 在 `src/app/styles/home.css` 中找到 ArticleRail 的自定义滚动条样式
 - [ ] 在 `src/lib/posts/` 中找到文章查询的 4 个子模块
 - [ ] 在 `src/components/home/` 中找到首页 8 个组件的渲染顺序（参考本文件 §三的"组件层级"）

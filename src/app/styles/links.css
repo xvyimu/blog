@@ -151,6 +151,18 @@
   line-height: 1.65;
 }
 
+.links-directory__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.links-directory__tag {
+  background: color-mix(in srgb, var(--brand-soft) 72%, transparent);
+  color: var(--text-soft);
+}
+
 @media (max-width: 1023px) {
   .links-directory__summary {
     grid-template-columns: repeat(2, minmax(0, 1fr));

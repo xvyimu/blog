@@ -396,6 +396,18 @@
         "title": "Keycloak",
         "url": "https://www.keycloak.org/",
         "description": "开源 IAM 与 SSO 平台，适合需要 OIDC、SAML 和统一账号体系的场景"
+      },
+      {
+        "title": "Awesome Selfhosted",
+        "url": "https://github.com/awesome-selfhosted/awesome-selfhosted",
+        "description": "社区维护的自托管软件清单，适合按备份、监控、媒体、协作等场景持续发现工具",
+        "tags": ["directory", "open-source"]
+      },
+      {
+        "title": "selfh.st",
+        "url": "https://selfh.st/",
+        "description": "聚合自托管新闻、项目发布和周报，适合跟踪小型服务器生态的新工具",
+        "tags": ["news", "self-hosted"]
       }
     ]
   },
@@ -460,9 +472,76 @@
         "description": "提供多地区 VPS 与优化线路产品，可作为特殊地区节点备选"
       },
       {
+        "title": "HostHatch",
+        "url": "https://hosthatch.com/",
+        "description": "老牌 VPS 商家，常见于大盘存储、NVMe VPS 和多地区节点方案比较",
+        "tags": ["vps", "global"]
+      },
+      {
+        "title": "GreenCloudVPS",
+        "url": "https://greencloudvps.com/",
+        "description": "提供多地区 VPS 与独立服务器产品，适合作为海外节点和促销机型观察对象",
+        "tags": ["vps", "global"]
+      },
+      {
+        "title": "BuyVM",
+        "url": "https://buyvm.net/",
+        "description": "Frantech 旗下 VPS 品牌，适合关注 KVM VPS、块存储和北美节点的长期口碑",
+        "tags": ["vps", "north-america"]
+      },
+      {
+        "title": "HostDare",
+        "url": "https://www.hostdare.com/",
+        "description": "主打洛杉矶等线路的 VPS 商家，可作为优化线路和促销套餐的备选入口",
+        "tags": ["vps", "network"]
+      },
+      {
         "title": "LegacyVPS 监控",
         "url": "https://legacyvps.com/scanidc",
         "description": "库存与补货监控入口，用来观察热门套餐，不直接使用推广链接"
+      }
+    ]
+  },
+  {
+    "id": "blog-inspiration",
+    "title": "博客项目与设计参考",
+    "description": "优秀个人博客、开源模板和内容组织参考，用来持续校准本站的信息架构与视觉方向",
+    "items": [
+      {
+        "title": "Tailwind Nextjs Starter Blog",
+        "url": "https://github.com/timlrx/tailwind-nextjs-starter-blog",
+        "description": "成熟的 Next.js + MDX 博客模板，适合参考内容组织、SEO、RSS 和主题结构",
+        "tags": ["nextjs", "mdx", "template"]
+      },
+      {
+        "title": "Astro Cactus",
+        "url": "https://github.com/chrismwilliams/astro-theme-cactus",
+        "description": "简洁的 Astro 博客主题，适合参考低干扰文章列表、标签和暗色主题体验",
+        "tags": ["astro", "theme"]
+      },
+      {
+        "title": "Josh Comeau",
+        "url": "https://www.joshwcomeau.com/",
+        "description": "高质量交互式技术博客，适合参考解释型文章、动效克制和代码示例呈现",
+        "tags": ["writing", "interaction"]
+      },
+      {
+        "title": "Lee Robinson",
+        "url": "https://leerob.com/",
+        "description": "Next.js 生态个人博客，适合参考简洁导航、文章索引和项目展示节奏",
+        "tags": ["nextjs", "personal"]
+      },
+      {
+        "title": "shijiucode",
+        "url": "https://shijiucode.cn/",
+        "description": "简洁、艺术感、低饱和的中文个人站参考，适合本站继续校准视觉气质",
+        "tags": ["visual", "minimal"]
+      },
+      {
+        "title": "Maggie Appleton",
+        "url": "https://maggieappleton.com/",
+        "description": "视觉化数字花园与长文写作参考，适合学习图文混排和知识网络呈现",
+        "tags": ["digital-garden", "visual"]
       }
     ]
   },

@@ -36,6 +36,7 @@ export interface LinkItem {
   title: string;
   url: string;
   description: string;
+  tags?: string[];
 }
 
 export interface LinkCategory {

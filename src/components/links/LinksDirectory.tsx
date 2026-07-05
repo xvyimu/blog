@@ -27,6 +27,15 @@ function LinkCard({ item }: { item: LinkItem }) {
         <span className="links-directory__host">{getLinkHost(item.url)}</span>
         <strong className="links-directory__title">{item.title}</strong>
         <span className="links-directory__desc">{item.description}</span>
+        {item.tags && item.tags.length > 0 ? (
+          <span className="links-directory__tags" aria-label={`${item.title} tags`}>
+            {item.tags.map((tag) => (
+              <MetaBadge key={tag} className="links-directory__tag">
+                {tag}
+              </MetaBadge>
+            ))}
+          </span>
+        ) : null}
       </a>
     </MagneticCard>
   );

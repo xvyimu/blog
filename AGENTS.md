@@ -6,6 +6,13 @@
 
 A personal blog built with Next.js 16.2 (App Router), React 19, and Tailwind CSS 4. Content is authored in MDX, stored in `content/blog/`. Projects data is in `data/projects.json`.
 
+## Skill Routing
+
+- Routine project continuation: use `superpower`.
+- Large feature delivery: use `ship`.
+- Pre-production launch preparation: use `shipping-and-launch`.
+- Deep code review: use `review`.
+
 ## Tech Stack
 
 - **Framework**: Next.js 16.2 (App Router; local-content driven, dynamic rendering for CSP nonce)
@@ -13,7 +20,7 @@ A personal blog built with Next.js 16.2 (App Router), React 19, and Tailwind CSS
 - **Content**: MDX with custom frontmatter parser (`lib/parse-frontmatter.ts`, js-yaml 4.x), next-mdx-remote
 - **Syntax Highlighting**: Shiki via rehype-pretty-code
 - **Search**: fuse.js (client-side fuzzy search)
-- **Testing**: Vitest (unit/integration, 519 tests, 65 files), Playwright (E2E, 43 tests, 4 spec files)
+- **Testing**: Vitest (unit/integration, 523 tests, 65 files), Playwright (E2E, 47 tests, 5 spec files)
 - **CI**: GitHub Actions (lint / test / tsc / build / bundle-budget / e2e)
 - **Deployment**: Vercel
 
@@ -108,8 +115,8 @@ src/
 ```bash
 pnpm dev          # Start dev server (port 3000; Turbopack)
 pnpm build        # Generate RSS + production build (93 page artifacts; routes are dynamic due CSP nonce)
-pnpm test         # Run unit/integration tests (519 tests, 65 files)
-pnpm test:e2e     # Run E2E tests (43 tests, 4 spec files; auto-starts dev/prod server on port 3001)
+pnpm test         # Run unit/integration tests (523 tests, 65 files)
+pnpm test:e2e     # Run E2E tests (47 tests, 5 spec files; auto-starts dev/prod server on port 3001)
 pnpm test:e2e:raw # Playwright raw (pass-through flags, e.g. --ui)
 pnpm lint         # ESLint
 pnpm check:seo    # SEO audit (tsx scripts/check-seo.ts)
