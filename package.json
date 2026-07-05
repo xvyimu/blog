@@ -11,6 +11,7 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,mjs,mts,css}\" \"scripts/**/*.{ts,mjs}\" \"e2e/**/*.ts\" \"*.{ts,mjs,mts,js}\"",
     "typecheck": "tsc --noEmit",
     "check:seo": "tsx scripts/check-seo.ts",
+    "check:production-content": "tsx scripts/check-production-content.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "node scripts/run-e2e.mjs",

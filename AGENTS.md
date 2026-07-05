@@ -113,6 +113,7 @@ pnpm test:e2e     # Run E2E tests (43 tests, 4 spec files; auto-starts dev/prod 
 pnpm test:e2e:raw # Playwright raw (pass-through flags, e.g. --ui)
 pnpm lint         # ESLint
 pnpm check:seo    # SEO audit (tsx scripts/check-seo.ts)
+pnpm check:production-content # Production content smoke test against NEXT_PUBLIC_SITE_URL
 pnpm analyze      # Bundle size analysis (ANALYZE=true next build)
 tsc --noEmit      # TypeScript check
 ```
@@ -133,4 +134,4 @@ GitHub Actions (`.github/workflows/ci.yml`) runs on push/PR to master:
 2. **bundle-analyze** — builds with analyzer, uploads report as artifact
 3. **e2e** — installs Chromium, runs Playwright tests (production build)
 4. **lighthouse** — Lighthouse CI via treosh/lighthouse-ci-action@v12 (needs quality; reuses `lighthouse.config.js` for assertions)
-5. **deploy** — Vercel production deploy (needs quality + e2e; master push only)
+5. **deploy** — Vercel production deploy + production content smoke test (needs quality + e2e + lighthouse; master push only)

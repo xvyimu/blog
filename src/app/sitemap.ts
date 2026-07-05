@@ -64,6 +64,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     },
     {
+      url: `${baseUrl}/links`,
+      lastModified: latestSiteModifiedAt,
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
+    {
       url: `${baseUrl}/tags`,
       lastModified: latestPostModifiedAt,
       changeFrequency: 'weekly',

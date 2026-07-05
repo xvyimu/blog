@@ -269,6 +269,7 @@ function checkSitemapCoverage(ctx: CheckContext): void {
     ctx.siteUrl,
     `${ctx.siteUrl}/blog`,
     `${ctx.siteUrl}/categories`,
+    `${ctx.siteUrl}/links`,
     `${ctx.siteUrl}/projects`,
     `${ctx.siteUrl}/tags`,
     `${ctx.siteUrl}/series`,
