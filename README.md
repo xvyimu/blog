@@ -172,7 +172,7 @@ GitHub Actions 流水线（`.github/workflows/ci.yml`）包含质量检查、E2E
 - **lighthouse** — Lighthouse CI 审计
 - **deploy** — Vercel 生产部署 → `pnpm check:production-content` 线上内容烟测（仅 master push）
 
-部署平台：Vercel（自动跟随 main 分支）。
+部署平台：Vercel（自动跟随 master 分支）。
 
 ## 内容约定
 
