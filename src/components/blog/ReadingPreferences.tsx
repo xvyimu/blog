@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { usePersistedEnum } from '@/hooks/usePersistedEnum';
 
 type FontSize = 'sm' | 'md' | 'lg';
@@ -27,7 +28,7 @@ const FONT_TITLES: Record<FontSize, string> = {
 };
 const WIDTH_TITLES: Record<Width, string> = {
   narrow: '窄栏',
-  normal: '标准',
+  normal: '标准栏宽',
   wide: '宽栏',
 };
 
@@ -36,6 +37,7 @@ export default function ReadingPreferences({
 }: {
   targetId?: string;
 }) {
+  const [mounted, setMounted] = useState(false);
   const {
     value: fontSize,
     cycle: cycleFontSize,
@@ -60,60 +62,53 @@ export default function ReadingPreferences({
     el.style.setProperty('--reading-width', WIDTH_MAP[width]);
   }, [fontSize, width, targetId, hydrated]);
 
-  return (
-    <div className="reading-prefs" aria-label="阅读偏好">
+  const fontLabel = FONT_TITLES[fontSize];
+  const widthLabel = WIDTH_TITLES[width];
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const panel = (
+    <div className="reading-prefs reading-prefs--left" role="group" aria-label="阅读设置">
+      <div className="reading-prefs__head" aria-hidden="true">
+        <span className="reading-prefs__title">阅读设置</span>
+        <span className="reading-prefs__hint">点击切换</span>
+      </div>
       <button
         type="button"
         onClick={cycleFontSize}
         className="reading-prefs__btn"
-        title={FONT_TITLES[fontSize]}
-        aria-label={FONT_TITLES[fontSize]}
-        style={{
-          fontSize:
-            fontSize === 'sm' ? '0.78rem' : fontSize === 'lg' ? '1rem' : '0.88rem',
-        }}
+        title={`切换字号，当前为${fontLabel}`}
+        aria-label={`切换字号，当前为${fontLabel}`}
       >
-        A
+        <span className="reading-prefs__icon" aria-hidden="true">
+          字
+        </span>
+        <span className="reading-prefs__text">
+          <span className="reading-prefs__label">字号</span>
+          <span className="reading-prefs__value">{fontLabel}</span>
+        </span>
       </button>
       <button
         type="button"
         onClick={cycleWidth}
         className="reading-prefs__btn"
-        title={WIDTH_TITLES[width]}
-        aria-label={WIDTH_TITLES[width]}
+        title={`切换栏宽，当前为${widthLabel}`}
+        aria-label={`切换栏宽，当前为${widthLabel}`}
       >
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          {width === 'narrow' && (
-            <>
-              <path d="M8 3H5a2 2 0 00-2 2v14a2 2 0 002 2h3" />
-              <path d="M16 3h3a2 2 0 012 2v14a2 2 0 01-2 2h-3" />
-            </>
-          )}
-          {width === 'normal' && (
-            <>
-              <path d="M3 3h18" />
-              <path d="M3 21h18" />
-              <path d="M12 3v18" />
-            </>
-          )}
-          {width === 'wide' && (
-            <>
-              <path d="M3 3h18v18H3z" />
-              <line x1="9" y1="3" x2="9" y2="21" />
-              <line x1="15" y1="3" x2="15" y2="21" />
-            </>
-          )}
-        </svg>
+        <span className="reading-prefs__icon" aria-hidden="true">
+          栏
+        </span>
+        <span className="reading-prefs__text">
+          <span className="reading-prefs__label">栏宽</span>
+          <span className="reading-prefs__value">{widthLabel}</span>
+        </span>
       </button>
     </div>
   );
+
+  if (!mounted) return null;
+
+  return createPortal(panel, document.body);
 }

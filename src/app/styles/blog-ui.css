@@ -653,27 +653,55 @@ a.article__badge:hover {
 
 .reading-prefs {
   position: fixed;
-  right: 24px;
-  bottom: 72px;
+  left: 24px;
+  bottom: 24px;
   z-index: 50;
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 8px;
+  width: min(188px, calc(100vw - 48px));
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(14px);
+}
+
+.reading-prefs__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 2px;
+}
+
+.reading-prefs__title {
+  color: var(--text);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.reading-prefs__hint {
+  color: var(--text-dim);
+  font-size: 0.68rem;
+  font-weight: 700;
 }
 
 .reading-prefs__btn {
-  display: flex;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
   align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
+  gap: 8px;
+  width: 100%;
+  min-height: 42px;
+  padding: 7px 8px;
   border: 1px solid var(--border);
-  border-radius: 50%;
-  background: var(--surface);
-  box-shadow: var(--shadow-sm);
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--surface-raised) 72%, transparent);
   color: var(--text-soft);
   font-weight: 800;
   line-height: 1;
+  text-align: left;
   transition:
     background var(--transition-fast),
     border-color var(--transition-fast),
@@ -688,6 +716,46 @@ a.article__badge:hover {
   box-shadow: var(--shadow-brand);
   color: var(--brand-hover);
   transform: translateY(-1px);
+}
+
+.reading-prefs__btn:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.reading-prefs__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--brand-hover);
+  font-size: 0.88rem;
+}
+
+.reading-prefs__text {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.reading-prefs__label {
+  color: var(--text-dim);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.reading-prefs__value {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .image-zoom-overlay {
