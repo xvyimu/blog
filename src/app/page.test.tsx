@@ -84,6 +84,19 @@ describe('HomePage', () => {
     expect(screen.getByText('TypeScript 与全栈')).toBeInTheDocument();
   });
 
+  it('uses encoded links for non-ASCII reading path routes', async () => {
+    await renderHomePage();
+
+    expect(screen.getByText('Web 性能与体验').closest('a')).toHaveAttribute(
+      'href',
+      `/tags/${encodeURIComponent('性能优化')}`,
+    );
+    expect(screen.getByText('数据层实践').closest('a')).toHaveAttribute(
+      'href',
+      `/categories/${encodeURIComponent('数据库')}`,
+    );
+  });
+
   it('renders recent posts section with selected posts', async () => {
     await renderHomePage();
     const allPosts = getAllPosts();

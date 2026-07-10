@@ -38,7 +38,7 @@ export default function TagsPage() {
             return (
               <Link
                 key={t.slug}
-                href={`/tags/${t.slug}`}
+                href={`/tags/${encodeURIComponent(t.slug)}`}
                 className="tag-cloud__item"
                 style={{
                   fontSize: `${size}rem`,

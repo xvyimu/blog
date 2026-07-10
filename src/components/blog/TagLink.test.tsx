@@ -19,4 +19,10 @@ describe('TagLink', () => {
     const link = screen.getByRole('link');
     expect(link).toHaveAttribute('href', '/tags/machine-learning');
   });
+
+  it('encodes non-ASCII tag slugs as URL segments', () => {
+    render(<TagLink tag="性能优化" slug="性能优化" />);
+    const link = screen.getByRole('link');
+    expect(link).toHaveAttribute('href', `/tags/${encodeURIComponent('性能优化')}`);
+  });
 });

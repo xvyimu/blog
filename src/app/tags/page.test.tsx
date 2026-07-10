@@ -62,7 +62,7 @@ describe('TagsPage', () => {
 
     for (const tag of tags) {
       const link = screen.getAllByText(tag.tag)[0].closest('a');
-      expect(link).toHaveAttribute('href', `/tags/${tag.slug}`);
+      expect(link).toHaveAttribute('href', `/tags/${encodeURIComponent(tag.slug)}`);
     }
   });
 });
