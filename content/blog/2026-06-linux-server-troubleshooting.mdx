@@ -1,14 +1,15 @@
 ---
 title: 'Linux 服务器排查手册：CPU、内存、磁盘、网络'
-description: '当服务出问题时，从四个维度系统性地排查服务器状态——CPU 满载、内存泄漏、磁盘占满、网络异常，每种场景的排查步骤和常用命令。'
+description: '服务异常时按 CPU → 内存 → 磁盘 → 网络四维排查：常用命令、定位顺序与日常预防清单。'
 date: '2026-06-26'
-tags: ['Linux', '运维', 'VPS', '监控']
+updatedAt: '2026-07-13'
+tags: ['Linux', '运维', '排查']
 published: true
 featured: false
 license: 'CC-BY-4.0'
 ---
 
-> 服务出问题的时候，最怕的不是问题本身，而是不知道从哪开始查。这篇文章整理了一套排查流程。
+> 结论先说：别凭感觉乱扫日志。固定顺序 CPU → 内存 → 磁盘 → 网络，配合 top/free/df/ss，多数线上故障能在几分钟内落到根因。
 
 ## 排查前的心态
 
@@ -306,3 +307,9 @@ ps aux --sort=-%mem | head -6
 - 配置日志轮转
 - 给关键指标设告警（磁盘 > 80%、内存 < 20%）
 - 定期查看 `dmesg`——很多问题（OOM killer、硬件错误）只出现在内核日志里，不会在应用日志中出现
+
+## 延伸阅读
+
+- [VPS 初始化安全与运维配置清单](/blog/vps-initial-setup)
+- [Docker 容器部署实战](/blog/docker-deploy-guide)
+- [Nginx 反向代理与负载均衡](/blog/nginx-reverse-proxy)

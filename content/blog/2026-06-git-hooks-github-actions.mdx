@@ -1,8 +1,9 @@
 ---
 title: '用 Git Hooks 和 GitHub Actions 打造自动化代码工作流'
-description: '从 pre-commit 代码检查到 CI/CD 自动化部署的完整实践，用 Git Hooks + GitHub Actions 让代码质量检查和发布流程自动化，减少手动操作和人为错误。'
+description: '本地 pre-commit + 远程 GitHub Actions：把检查、构建和部署串成「提交即可上线」的双层自动化。'
 date: '2026-06-24'
-tags: ['Git', 'CI/CD', 'GitHub Actions', '自动化']
+updatedAt: '2026-07-13'
+tags: ['Git', 'GitHub Actions', 'CI/CD']
 series: '个人服务部署路线'
 seriesOrder: 4
 published: true
@@ -10,7 +11,7 @@ featured: false
 license: 'CC-BY-4.0'
 ---
 
-> 配合 VPS 初始化和 Docker 部署这两篇文章，这篇聊聊代码从提交到上线的自动化链路。
+> 结论先说：本地 Git Hooks 挡脏提交，远程 Actions 挡脏合并；两层配齐后，部署命令不该再出现在你的日常操作里。
 
 ## 为什么需要自动化工作流
 
@@ -227,3 +228,9 @@ main 分支 push
 - **GitHub Actions 把好远程合并这一关**，不管谁来提交都按统一标准验证，通过后自动部署
 
 这两层配好之后，"提交即上线"成为常态，不需要再手动敲部署命令。
+
+## 延伸阅读
+
+- [CI/CD 流水线设计](/blog/cicd-pipeline-design)
+- [Docker 容器部署实战](/blog/docker-deploy-guide)
+- [VPS 初始化安全与运维配置清单](/blog/vps-initial-setup)

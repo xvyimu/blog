@@ -1,8 +1,9 @@
 ---
 title: 'CI/CD 流水线设计：从单脚本到 GitHub Actions 多阶段流水线'
-description: '从零搭建 CI/CD 流水线，涵盖流水线阶段设计、并行与串行策略、缓存优化、制品管理和部署策略，以 GitHub Actions 为例。'
+description: 'GitHub Actions 多阶段流水线：阶段划分、并行与缓存、制品管理与部署策略，从单脚本演进到可回滚发布。'
 date: '2026-06-25'
-tags: ['CI/CD', 'GitHub Actions', 'DevOps', '自动化']
+updatedAt: '2026-07-13'
+tags: ['CI/CD', 'GitHub Actions', 'DevOps']
 series: '个人服务部署路线'
 seriesOrder: 5
 published: true
@@ -10,7 +11,7 @@ featured: false
 license: 'CC-BY-4.0'
 ---
 
-> 手动部署是事故的温床。这篇文章讲如何从零设计 CI/CD 流水线——阶段划分、并行策略、缓存优化、制品管理和部署策略，以 GitHub Actions 为例。
+> 结论先说：流水线按 lint → test → build → deploy 快速失败；能并行就并行，依赖与镜像必须缓存，制品用 commit SHA 标识。
 
 ## 为什么要设计流水线
 
@@ -914,3 +915,9 @@ jobs:
 流水线是演进的。从最简单的 lint + test 开始，逐步加构建、部署、缓存、矩阵。不要一开始就设计完美流水线——先跑起来，再优化。
 
 参考：[GitHub Actions 文档](https://docs.github.com/en/actions)、[Docker Build Push Action](https://github.com/docker/build-push-action)、[Kubernetes 部署文档](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
+
+## 延伸阅读
+
+- [Git Hooks 与 GitHub Actions 自动化](/blog/git-hooks-github-actions)
+- [Docker 容器部署实战](/blog/docker-deploy-guide)
+- [VPS 初始化安全与运维配置清单](/blog/vps-initial-setup)

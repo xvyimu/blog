@@ -1,14 +1,15 @@
 ---
 title: 'PostgreSQL 性能优化实战：慢查询排查与索引策略'
-description: 'PostgreSQL 在生产环境中的性能优化方法：EXPLAIN 分析、索引策略（B-Tree/GIN/GiST）、连接池配置、VACUUM 与表膨胀治理、分区表实践，以及常见慢查询的排查思路。'
+description: 'PostgreSQL 慢查询实战：EXPLAIN、B-Tree/GIN 索引、连接池、VACUUM 与分区表，先测量再改。'
 date: '2026-06-27'
-tags: ['PostgreSQL', '数据库', '性能优化', '后端']
+updatedAt: '2026-07-13'
+tags: ['PostgreSQL', '索引', '性能优化']
 published: true
 featured: false
 license: 'CC-BY-4.0'
 ---
 
-> 数据库慢查询是后端最常见的问题。这篇文章讲 PostgreSQL 性能优化的实战经验——从 EXPLAIN 分析到索引设计。
+> 结论先说：没有 EXPLAIN ANALYZE 的优化都是猜测。先看执行计划与索引列顺序，再谈连接池、VACUUM 和分区。
 
 ## 性能问题的第一信号
 
@@ -433,3 +434,9 @@ PostgreSQL 性能优化的核心思路：
 6. **避免 N+1 和大 OFFSET** — 这是应用层最常见的数据库性能杀手
 
 性能优化是一个持续过程，不是一次性工作。建立监控、定期审查慢查询、保持统计信息更新，比任何单次优化都重要。
+
+## 延伸阅读
+
+- [Redis 缓存策略](/blog/redis-caching-strategies)
+- [Supabase 实战](/blog/supabase-practical-guide)
+- [Linux 服务器排查手册](/blog/linux-server-troubleshooting)

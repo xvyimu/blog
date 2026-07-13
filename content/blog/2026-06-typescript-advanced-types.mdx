@@ -1,14 +1,15 @@
 ---
 title: 'TypeScript 高级类型实战：从泛型到条件类型的进阶之路'
-description: '深入 TypeScript 类型系统：泛型约束、条件类型、映射类型、模板字面量类型、类型推断技巧，以及在实际项目中如何用类型驱动开发减少运行时错误。'
+description: 'TypeScript 进阶类型：泛型约束、条件类型、映射与模板字面量，用类型把错误挡在编译期。'
 date: '2026-06-26'
-tags: ['TypeScript', '前端', '类型系统']
+updatedAt: '2026-07-13'
+tags: ['TypeScript', '类型系统', '泛型']
 published: true
 featured: false
 license: 'CC-BY-4.0'
 ---
 
-> 类型系统不是用来限制你的，而是用来保护你的。这篇文章讲 TypeScript 高级类型在实际项目中的运用。
+> 结论先说：高级类型的目标不是炫技，而是消灭 `as any`。泛型约束、条件类型与 zod+infer 能把运行时错误前移到编译期。
 
 ## 为什么需要高级类型
 
@@ -354,3 +355,9 @@ const a: A = b;  // ✓ B 比 A 多属性，结构兼容
 | zod + infer | 运行时验证 + 编译期类型 |
 
 类型系统的价值不在于写出更复杂的类型，而在于让错误在编译期暴露。当你发现自己在写 `as any` 时，停下来想想——大概率有更好的类型表达方式。
+
+## 延伸阅读
+
+- [Next.js App Router 实战](/blog/nextjs-app-router)
+- [Web 性能优化实战](/blog/web-performance-optimization)
+- [Go 语言 CLI 工具入门](/blog/go-cli-tool)

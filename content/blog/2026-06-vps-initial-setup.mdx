@@ -1,8 +1,9 @@
 ---
 title: 'VPS 初始化安全与运维配置清单'
-description: '拿到一台新 VPS 后应该做的安全配置和运维设置，涵盖 SSH 加固、防火墙、Fail2Ban、自动更新、Docker 安装和监控工具，一份照着执行的清单。'
+description: '新 VPS 上线前的安全与运维清单：SSH 加固、UFW、Fail2Ban、自动更新、Docker 与基础监控，照着做即可。'
 date: '2026-06-23'
-tags: ['VPS', 'Linux', '安全', '运维']
+updatedAt: '2026-07-13'
+tags: ['VPS', 'Linux', '安全', 'SSH']
 series: '个人服务部署路线'
 seriesOrder: 1
 published: true
@@ -10,7 +11,7 @@ featured: false
 license: 'CC-BY-4.0'
 ---
 
-> 一份新入手 VPS 时的标配配置清单。
+> 结论先说：新 VPS 不要急着装业务。先完成 SSH 密钥登录、禁 root 密码、防火墙与 Fail2Ban，再装 Docker——否则 22 端口的扫描会比你的应用先到。
 
 ## 前言
 
@@ -278,3 +279,9 @@ echo "5. 调整 limits.conf 和 sysctl.conf（BBR）"
 - 每月检查一次 `fail2ban` 状态
 - `apt update` 保持系统更新
 - 检查 `/var/log/auth.log` 看有没有异常登录尝试
+
+## 延伸阅读
+
+- [Docker 容器部署实战](/blog/docker-deploy-guide)
+- [Nginx 反向代理与负载均衡](/blog/nginx-reverse-proxy)
+- [Linux 服务器排查手册](/blog/linux-server-troubleshooting)

@@ -1,14 +1,15 @@
 ---
 title: 'Go 语言入门：从零写一个 CLI 工具'
-description: '用 Go 语言从零实现一个实用的命令行工具，涵盖 flag 参数解析、文件 IO、JSON 输出、错误处理和交叉编译，让有脚本基础的开发者快速上手 Go。'
+description: '用 Go 从零写可分发 CLI：flag、文件 IO、JSON 输出、错误处理与交叉编译成单二进制。'
 date: '2026-06-25'
-tags: ['Go', '后端', 'CLI', '工具']
+updatedAt: '2026-07-13'
+tags: ['Go', 'CLI']
 published: true
 featured: false
 license: 'CC-BY-4.0'
 ---
 
-> 之前一直用 Node.js / Python 写工具，最近开始用 Go 写——编译成单个二进制文件、零依赖部署的感觉确实好。
+> 结论先说：需要丢到多台服务器、零运行时依赖的工具，优先 Go 编译成单二进制；脚本语言适合原型，不适合当运维标配。
 
 ## 为什么选 Go 写 CLI
 
@@ -254,3 +255,9 @@ Go 写 CLI 工具的体验很舒适——标准库够用、编译产物简单、
 - 用 `cobra` + `viper` 做更复杂的 CLI 框架
 - 加入彩色输出（`fatih/color`）
 - 加入进度条（`cheggaaa/pb`）
+
+## 延伸阅读
+
+- [Cloudflare Workers 实战](/blog/cloudflare-workers-guide)
+- [CI/CD 流水线设计](/blog/cicd-pipeline-design)
+- [Linux 服务器排查手册](/blog/linux-server-troubleshooting)

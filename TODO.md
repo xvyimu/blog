@@ -1,7 +1,7 @@
 # 西江月博客 · 项目待办
 
-> 当前状态: P8 审查落地（搜索投影/限流/CSP/粒子/字体/CI 复用 build）；线上 `https://incca.ccwu.cc`
-> 更新: 2026-07-12
+> 当前状态: P9 内容 SEO Phase A 已落地（14 篇元数据+内链）；GSC/Bing 待账号；线上 `https://incca.ccwu.cc`
+> 更新: 2026-07-13
 
 ---
 
@@ -181,15 +181,16 @@
 - [x] CI：`check:blur` 进 quality；e2e/lighthouse 同 job 自建 `.next`（跨 job artifact 不可 `next start`）
 - [x] `docs/architecture.md` 搜索双路径同步
 
-## P9 · 内容 SEO Phase A · 待做 (计划 2026-07-13)
+## P9 · 内容 SEO Phase A · 工程侧已完成 (2026-07-13)
 
-> 规划已对齐（2026-07-12）：**不做**全量 BEM rewrite / 现规模 Meili·ES / 无 RUM 假 p75 / 正文文字脱敏 blur。  
-> 记忆：本地 `blog-content-seo-plan-2026-07-12`；工程基线 HEAD `f234f1c`。
+> **不做**全量 BEM rewrite / 现规模 Meili·ES / 无 RUM 假 p75 / 正文文字脱敏 blur。  
+> 方案：`docs/content-seo-plan-2026-07-12.md` · 批处理：`scripts/_apply-content-seo-p9.mjs`
 
-- [ ] Google Search Console + Bing Webmaster：属性校验 + 提交 `https://incca.ccwu.cc/sitemap.xml`（需账号）
-- [ ] 可选落库：`docs/content-seo-plan-2026-07-12.md` + 单篇 checklist
-- [ ] 14 篇 MDX 内容清单滚动：title 唯一、description 意图句、文首结论、≥2 站内链（同簇+枢纽）、tags 去语义重叠
-- [ ] 优先收紧最泛的 ~5 篇 `description`；簇内互链（性能 / 数据 / 运维 / 边缘）
+- [ ] Google Search Console + Bing Webmaster：属性校验 + 提交 `https://incca.ccwu.cc/sitemap.xml`（**需你账号**）
+- [x] 落库：`docs/content-seo-plan-2026-07-12.md` + 14 篇 checklist
+- [x] 14 篇 MDX：`updatedAt`、description 意图句、文首结论 blockquote、`## 延伸阅读` ≥2 站内链、tags 去泛化
+- [x] 四簇互链：运维发布 / 数据缓存 / 性能前端 / 边缘工具
+- [x] `pnpm check:seo` 通过
 - [ ] （有 GSC 展示后）用 query 数据替换代理指标，再改标题钩子
 
 ## Future · 远期

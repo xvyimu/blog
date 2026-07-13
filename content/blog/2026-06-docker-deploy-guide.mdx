@@ -1,8 +1,9 @@
 ---
 title: 'Docker 容器部署实战：从零搭建 Node.js 应用'
-description: '从安装 Docker 开始，到将一个完整的 Node.js 应用容器化并部署到服务器的全过程，包含 Dockerfile 优化、多阶段构建、Docker Compose 编排，以及生产环境的最佳实践。'
+description: '把 Node.js 应用从源码做到生产容器：Dockerfile 多阶段构建、Compose 编排与镜像体积优化。'
 date: '2026-06-22'
-tags: ['Docker', 'Node.js', '部署', '容器']
+updatedAt: '2026-07-13'
+tags: ['Docker', 'Node.js', '部署']
 series: '个人服务部署路线'
 seriesOrder: 2
 published: true
@@ -10,8 +11,7 @@ featured: true
 license: 'CC-BY-4.0'
 ---
 
-> **适用读者**：有基础 Linux 操作经验、想上手 Docker 的开发者。
-> **目标**：把一个 Node.js 应用从源码 → Docker 镜像 → 服务器跑起来。
+> 结论先说：用多阶段 Dockerfile + Compose 把 Node 应用固化成「同一套镜像到处跑」；别再在服务器上裸装 Node 然后 pm2 start。
 
 ## 为什么选择 Docker
 
@@ -243,3 +243,9 @@ dist
 从安装 Docker、写 Dockerfile、构建镜像，到用 Docker Compose 编排多容器服务——这套流程已经成了我部署应用的标配。容器化的好处不用多说，关键是**形成规范**：每个项目都按同样的方式组织、同样的命令部署，省心很多。
 
 下一篇会讲如何用 Docker Compose 编排更多服务，以及一些进阶的部署策略。
+
+## 延伸阅读
+
+- [VPS 初始化安全与运维配置清单](/blog/vps-initial-setup)
+- [Nginx 反向代理与负载均衡](/blog/nginx-reverse-proxy)
+- [Git Hooks 与 GitHub Actions 自动化](/blog/git-hooks-github-actions)

@@ -1,8 +1,9 @@
 ---
 title: 'Nginx 反向代理与负载均衡实战'
-description: '从 Nginx 基础配置到反向代理、负载均衡、HTTPS 重定向和静态资源优化的完整指南，适合需要在生产环境部署 Web 服务的开发者。'
+description: '生产前端层 Nginx：反向代理、负载均衡、HTTPS 终端与静态缓存，让后端只关心业务。'
 date: '2026-06-24'
-tags: ['Nginx', 'Linux', '运维', '部署']
+updatedAt: '2026-07-13'
+tags: ['Nginx', '反向代理', 'HTTPS']
 series: '个人服务部署路线'
 seriesOrder: 3
 published: true
@@ -10,7 +11,7 @@ featured: false
 license: 'CC-BY-4.0'
 ---
 
-> 在 Docker 部署和 VPS 初始化之后，Nginx 是最常用的前端层——反向代理、负载均衡、HTTPS 终端、静态资源缓存，一个搞定。
+> 结论先说：生产环境把 TLS、反向代理、限流和静态缓存交给 Nginx，后端只听内网端口——比每个服务各自挂证书稳得多。
 
 ## 为什么需要 Nginx
 
@@ -248,3 +249,9 @@ curl http://127.0.0.1/nginx_status
 Nginx 是部署流程里最值得花时间配置好的环节。一个合理的 Nginx 层能让后端服务更简单——只管处理业务逻辑，安全、缓存、限流全交给 Nginx。
 
 参考配置：[Nginx 官方文档](https://nginx.org/en/docs/)
+
+## 延伸阅读
+
+- [Docker 容器部署实战](/blog/docker-deploy-guide)
+- [VPS 初始化安全与运维配置清单](/blog/vps-initial-setup)
+- [Cloudflare Workers 实战](/blog/cloudflare-workers-guide)

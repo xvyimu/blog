@@ -1,14 +1,15 @@
 ---
 title: 'Web 性能优化实战：从 Core Web Vitals 到首屏加载'
-description: 'Web 性能优化的完整指南：Core Web Vitals 指标解读、LCP/INP/CLS 优化策略、资源加载优先级、字体优化、图片懒加载、代码分割，以及如何用 Lighthouse 和 Chrome DevTools 定位性能瓶颈。'
+description: 'Core Web Vitals 落地：LCP/INP/CLS 优先序、资源优先级、字体与图片、代码分割，以及 Lighthouse 定位瓶颈。'
 date: '2026-06-28'
-tags: ['性能优化', '前端', 'Core Web Vitals', 'Lighthouse']
+updatedAt: '2026-07-13'
+tags: ['Core Web Vitals', 'Lighthouse', '性能优化']
 published: true
 featured: true
 license: 'CC-BY-4.0'
 ---
 
-> 性能不是一次性的工作，而是一种习惯。这篇文章讲 Web 性能优化的实战方法——从指标到落地。
+> 结论先说：先测再改。优先把 LCP/INP/CLS 从 Poor 拉到 Good，再抠代码分割与字体；没有 RUM 数据时，别用假 p75 自我安慰。
 
 ## Core Web Vitals：Google 的性能三件套
 
@@ -491,3 +492,9 @@ export default function RootLayout({ children }) {
 6. **持续监控** — 采集真实用户的 Web Vitals 数据
 
 性能优化不是追求 100 分，而是在用户体验和开发成本之间找到平衡点。先解决 Poor 的问题，再逐步向 Good 靠拢。
+
+## 延伸阅读
+
+- [Next.js App Router 实战](/blog/nextjs-app-router)
+- [TypeScript 高级类型实战](/blog/typescript-advanced-types)
+- [Cloudflare Workers 实战](/blog/cloudflare-workers-guide)
