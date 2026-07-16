@@ -51,6 +51,13 @@ describe('MagneticCard', () => {
   });
 
   it('applies pointer-driven spotlight variables and custom strength', () => {
+    const rafCallbacks: FrameRequestCallback[] = [];
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+      rafCallbacks.push(cb);
+      return rafCallbacks.length;
+    });
+    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => undefined);
+
     render(
       <MagneticCard strength={6}>
         <span>Content</span>
@@ -71,6 +78,9 @@ describe('MagneticCard', () => {
     });
 
     fireEvent.pointerMove(article, { clientX: 150, clientY: 50 });
+    expect(article.style.transform).toBe('');
+    expect(rafCallbacks).toHaveLength(1);
+    rafCallbacks[0](0);
 
     expect(article.style.transform).toContain('perspective(720px)');
     expect(article.style.transform).toContain('rotateY(1.5deg)');
@@ -80,7 +90,51 @@ describe('MagneticCard', () => {
     expect(article.style.getPropertyValue('--spotlight-y')).toBe('50px');
   });
 
+  it('coalesces multiple pointer moves into a single rAF apply', () => {
+    const rafCallbacks: FrameRequestCallback[] = [];
+    const rafSpy = vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+      rafCallbacks.push(cb);
+      return rafCallbacks.length;
+    });
+    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => undefined);
+
+    render(
+      <MagneticCard>
+        <span>Content</span>
+      </MagneticCard>,
+    );
+    const article = document.querySelector('article')!;
+    const rectSpy = vi.spyOn(article, 'getBoundingClientRect').mockReturnValue({
+      width: 200,
+      height: 100,
+      left: 0,
+      top: 0,
+      right: 200,
+      bottom: 100,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    });
+
+    fireEvent.pointerMove(article, { clientX: 100, clientY: 25 });
+    fireEvent.pointerMove(article, { clientX: 150, clientY: 50 });
+    expect(rafSpy).toHaveBeenCalledTimes(1);
+    expect(rectSpy).not.toHaveBeenCalled();
+
+    rafCallbacks[0](0);
+    expect(rectSpy).toHaveBeenCalledTimes(1);
+    expect(article.style.getPropertyValue('--spotlight-x')).toBe('150px');
+    expect(article.style.getPropertyValue('--spotlight-y')).toBe('50px');
+  });
+
   it('applies magnetic transform on pointer move', () => {
+    const rafCallbacks: FrameRequestCallback[] = [];
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+      rafCallbacks.push(cb);
+      return rafCallbacks.length;
+    });
+    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => undefined);
+
     render(
       <MagneticCard>
         <span>Content</span>
@@ -88,7 +142,6 @@ describe('MagneticCard', () => {
     );
     const article = document.querySelector('article')!;
 
-    // getBoundingClientRect mock
     vi.spyOn(article, 'getBoundingClientRect').mockReturnValue({
       width: 200,
       height: 100,
@@ -101,8 +154,8 @@ describe('MagneticCard', () => {
       toJSON: () => ({}),
     });
 
-    // Simulate pointer move at center-right
     fireEvent.pointerMove(article, { clientX: 150, clientY: 50 });
+    rafCallbacks[0](0);
 
     expect(article.style.transform).toContain('perspective(720px)');
     expect(article.style.transform).toContain('rotateY');
@@ -112,6 +165,13 @@ describe('MagneticCard', () => {
   });
 
   it('clears transform on pointer leave', () => {
+    const rafCallbacks: FrameRequestCallback[] = [];
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+      rafCallbacks.push(cb);
+      return rafCallbacks.length;
+    });
+    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => undefined);
+
     render(
       <MagneticCard>
         <span>Content</span>
@@ -132,6 +192,7 @@ describe('MagneticCard', () => {
     });
 
     fireEvent.pointerMove(article, { clientX: 150, clientY: 50 });
+    rafCallbacks[0](0);
     expect(article.style.transform).toBeTruthy();
 
     fireEvent.pointerLeave(article);
@@ -141,6 +202,7 @@ describe('MagneticCard', () => {
 
   it('skips transform when prefers-reduced-motion is enabled', () => {
     mockReduced.mockReturnValue(true);
+    const rafSpy = vi.spyOn(window, 'requestAnimationFrame');
 
     render(
       <MagneticCard>
@@ -162,6 +224,7 @@ describe('MagneticCard', () => {
     });
 
     fireEvent.pointerMove(article, { clientX: 150, clientY: 50 });
+    expect(rafSpy).not.toHaveBeenCalled();
     expect(article.style.transform).toBe('');
   });
 

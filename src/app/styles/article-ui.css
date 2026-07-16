@@ -19,14 +19,16 @@
 
 .article__title {
   color: var(--text);
-  font-family: var(--font-display), Georgia, serif;
-  font-size: clamp(2.7rem, 6vw, 5.2rem);
+  font-family: var(--font-display), Georgia, 'Times New Roman', serif;
+  /* Cap fluid size to reduce lab CLS from display-font metric swap on long titles. */
+  font-size: clamp(2.25rem, 5vw, 3.75rem);
   font-weight: 500;
   letter-spacing: 0;
   /* Slightly looser than 0.98 so metric fallback swap cannot clip/reflow as hard. */
-  line-height: 1.05;
+  line-height: 1.08;
   /* Cap reflow when display font swaps in (pairs with adjustFontFallback). */
   text-rendering: optimizeLegibility;
+  overflow-wrap: anywhere;
 }
 
 .article__meta {

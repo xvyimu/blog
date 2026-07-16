@@ -16,6 +16,10 @@ import HomeCtaSection from '@/components/home/HomeCtaSection';
 import RevealOnScroll from '@/components/home/RevealOnScroll';
 import { getCspNonce } from '@/lib/csp';
 import { selectHomeLinkPreviewCategories } from '@/lib/link-preview';
+// Route-scoped homepage CSS (FE-1): keep off other routes.
+import './styles/home.css';
+import './styles/home-hero.css';
+import './styles/home-sections.css';
 
 function buildReadingPaths(): ReadingPathItem[] {
   return [

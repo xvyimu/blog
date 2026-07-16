@@ -19,6 +19,9 @@ export const runtime = 'nodejs';
  *
  * Server-side Fuse over the same PostMeta index as the blog list.
  * Wire payload is SearchResultItem (projected — no searchText).
+ *
+ * Rate limit is origin best-effort (process Map). CDN-cached 200s do not count.
+ * See rate-limit.ts and docs/API.md.
  */
 export async function GET(request: Request) {
   const key = clientKeyFromRequest(request);
@@ -84,6 +87,7 @@ export async function GET(request: Request) {
 
 function cacheHeaders(): Record<string, string> {
   // Content is build-time MDX; short CDN cache is safe and cuts cold latency.
+  // Note: cached responses bypass the process-local rate limiter (by design).
   return {
     'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
   };

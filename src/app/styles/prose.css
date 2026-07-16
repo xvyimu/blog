@@ -186,6 +186,8 @@ html:not(.dark) .prose pre {
   overflow: hidden;
   margin-bottom: 22px;
   border-radius: var(--radius);
+  /* Reserve space before Shiki paints to limit lab CLS on long posts. */
+  min-height: 3.5rem;
   box-shadow: var(--shadow-sm);
 }
 

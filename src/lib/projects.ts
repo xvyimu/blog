@@ -50,6 +50,7 @@ export function createProjectsRepository(source: ContentSource): ProjectsReposit
     source,
     path: CONTENT_DIR.projects,
     label: 'projects',
+    // Production: fail-fast on missing/corrupt JSON (see createJsonContentRepository mode).
     fallback: () => [],
     parse: parseProjects,
   });

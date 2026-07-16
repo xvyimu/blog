@@ -1,8 +1,8 @@
 # 项目架构说明
 
-> 状态：当前维护版（2026-07-06）
+> 状态：当前维护版（2026-07-17）
 >
-> 这份文档是面向接手者的架构摘要：说明内容从哪里来、如何被解析、页面如何渲染、样式和安全边界在哪里，以及新增能力时应该落在哪一层。更细的运行状态与后续方向见 [`docs/handoff-to-agent.md`](./handoff-to-agent.md)，具体设计决策见 `docs/specs/` 与 `docs/adr/`。
+> 这份文档是面向接手者的架构摘要：说明内容从哪里来、如何被解析、页面如何渲染、样式和安全边界在哪里，以及新增能力时应该落在哪一层。更细的运行状态与后续方向见 [`docs/handoff-to-agent.md`](./handoff-to-agent.md)，具体设计决策见 `docs/specs/` 与 `docs/adr/`。全栈审查：[`docs/full-stack-audit-2026-07-17.md`](./full-stack-audit-2026-07-17.md)。
 
 ## 1. 项目定位
 
@@ -13,6 +13,17 @@
 - 用 Next.js App Router 渲染页面、RSS、sitemap、OG image 与 PWA manifest；
 - 用严格 CSP nonce、安全响应头和内容校验保证静态博客也能按生产站点标准运行；
 - 用 Vitest、Playwright、SEO 检查、Bundle 预算和生产内容 smoke test 守住回归。
+
+**渲染模型（重要）**
+
+| 层        | 行为                                            | 原因                                                          |
+| --------- | ----------------------------------------------- | ------------------------------------------------------------- |
+| HTML 文档 | **动态**（`headers()` + per-request CSP nonce） | 严格 `script-src` + `strict-dynamic`，优先于全站 SSG 边缘缓存 |
+| 内容数据  | 本地 MDX/JSON，进程内缓存                       | 无运行时数据库                                                |
+| 静态资产  | feed / 图片 / `_next/static` 可边缘缓存         | 与 HTML 策略分离                                              |
+| 搜索 API  | Node runtime + 短 CDN cache                     | 见 [`docs/API.md`](./API.md)                                  |
+
+**不要**为了 HTML 静态化而把脚本 CSP 放宽到 `unsafe-inline`。
 
 当前技术栈：
 
@@ -45,6 +56,15 @@ content/ + data/
 | 组件层 | `src/components/`                  | 页面结构、交互组件、通用 UI primitive                               |
 | 样式层 | `src/app/styles/`                  | 设计令牌、全局基础、页面/组件 CSS、响应式覆盖                       |
 | 验证层 | `*.test.ts(x)`, `e2e/`, `scripts/` | 单元/集成/E2E/SEO/Bundle/生产内容检查                               |
+
+### 样式加载
+
+- **根 layout**：tokens / base / components / archive / controls / blog-ui / article-ui / backdrop / prose / animations / responsive。
+- **路由下沉**：`home*.css` → `app/page.tsx`；`search-ui.css` → `app/blog/layout.tsx`；`links.css` → `app/links/layout.tsx`；`project-detail.css` → `app/projects/[id]/layout.tsx`。
+
+### JSON 数据 fail-fast
+
+`createJsonContentRepository`：生产默认 `strict`（缺文件/坏 JSON **抛错**）；开发与测试默认 `lenient`（fallback）。CI `check:seo` 是另一道硬门禁。
 
 ## 3. 内容数据流
 

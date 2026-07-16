@@ -176,6 +176,9 @@ export function createLinksRepository(source: ContentSource): LinksRepository {
     source,
     path: CONTENT_DIR.links,
     label: 'links',
+    // Production: fail-fast on missing/corrupt JSON (CI check-seo is the other gate).
+    // Tests inject in-memory sources and rely on default NODE_ENV !== production → lenient,
+    // or pass mode explicitly via createJsonContentRepository options when needed.
     fallback: () => [],
     parse: parseLinks,
   });

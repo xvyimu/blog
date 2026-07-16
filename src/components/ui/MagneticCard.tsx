@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, type PointerEvent, type ReactNode } from 'react';
+import { useEffect, useRef, type PointerEvent, type ReactNode } from 'react';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 import { cn } from '@/lib/utils';
 
@@ -19,13 +19,24 @@ export default function MagneticCard({
 }) {
   const ref = useRef<HTMLElement>(null);
   const reduced = usePrefersReducedMotion();
+  const frameIdRef = useRef<number | null>(null);
+  const latestRef = useRef({ clientX: 0, clientY: 0 });
 
-  const handleMove = (clientX: number, clientY: number) => {
+  useEffect(() => {
+    return () => {
+      if (frameIdRef.current !== null) {
+        window.cancelAnimationFrame(frameIdRef.current);
+        frameIdRef.current = null;
+      }
+    };
+  }, []);
+
+  const applyPosition = () => {
+    frameIdRef.current = null;
     const el = ref.current;
-    if (!el) return;
+    if (!el || reduced) return;
 
-    if (reduced) return;
-
+    const { clientX, clientY } = latestRef.current;
     const rect = el.getBoundingClientRect();
     const localX = clientX - rect.left;
     const localY = clientY - rect.top;
@@ -43,11 +54,19 @@ export default function MagneticCard({
   };
 
   const handlePointerMove = (event: PointerEvent<HTMLElement>) => {
-    if (event.pointerType === 'touch') return;
-    handleMove(event.clientX, event.clientY);
+    if (event.pointerType === 'touch' || reduced) return;
+
+    latestRef.current = { clientX: event.clientX, clientY: event.clientY };
+    if (frameIdRef.current === null) {
+      frameIdRef.current = window.requestAnimationFrame(applyPosition);
+    }
   };
 
   const handleLeave = () => {
+    if (frameIdRef.current !== null) {
+      window.cancelAnimationFrame(frameIdRef.current);
+      frameIdRef.current = null;
+    }
     const el = ref.current;
     if (!el) return;
     el.style.transform = '';

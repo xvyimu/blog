@@ -97,7 +97,26 @@ function loadRssPosts(filenames: string[]): RssPost[] {
   return posts;
 }
 
+function assertProductionSiteUrl() {
+  const siteUrl = SITE_CONFIG.url;
+  if (process.env.NODE_ENV !== 'production') return;
+  try {
+    const parsed = new URL(siteUrl);
+    if (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1') {
+      throw new Error(
+        `[RSS] Refusing to write production feed with localhost URL (${siteUrl}). ` +
+          'Set NEXT_PUBLIC_SITE_URL=https://incca.ccwu.cc for production builds.',
+      );
+    }
+  } catch (error) {
+    if (error instanceof Error && error.message.startsWith('[RSS]')) throw error;
+    throw new Error(`[RSS] SITE_CONFIG.url is invalid: ${siteUrl}`);
+  }
+}
+
 function generateRss() {
+  assertProductionSiteUrl();
+
   if (!fs.existsSync(POSTS_DIR)) {
     console.warn('[RSS] content/blog 目录不存在，跳过');
     return;

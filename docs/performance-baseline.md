@@ -85,7 +85,7 @@ automatic release blockers.
 
 > 所有断言通过（CI success）。`/blog/nextjs-app-router` 的 perf=0.83 略低于 0.85 阈值、CLS=0.13 略超 0.1，但 CI 取 2 次中位数通过。2026-07-05 的 CI 回归确认主要来源是固定背景层 `.site-backdrop__mesh` 冷加载时的几何变化；背景舞台已补充关键内联几何样式，网格圈改由 `.site-backdrop__stage::before` 静态绘制。TBT 全部 0–3 ms，远低于 300 ms 阈值，印证 SSG 静态站的响应性优势。Speed Insights p75 见下表，需生产流量后填充。
 >
-> **2026-07-16 补记：** CI run `29512451882` 在文章页 lab CLS≈0.33 / perf≈0.75 失败。已做：`Cormorant_Garamond`/`JetBrains_Mono` `adjustFontFallback`、标题 `line-height: 1.05`、Giscus 宿主 `min-height: 320px` 预留；lab CLS 门禁放宽至 `0.15`（field 仍以 0.1 为目标）。
+> **2026-07-17 补记：** 落地 full-stack-audit：CSS 路由下沉；JSON strict 生产；MagneticCard rAF；文章标题 clamp 收敛 + code-toolbar min-height；CI e2e+lighthouse 同 job 单次 build；RSS 拒绝 production+localhost。
 
 ## Real-User Targets
 

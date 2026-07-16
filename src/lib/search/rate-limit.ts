@@ -1,6 +1,13 @@
 /**
  * Process-local fixed window rate limit for /api/search.
- * Multi-instance serverless is best-effort only; pairs with CDN cache.
+ *
+ * Semantics (origin best-effort):
+ * - Counts only requests that reach this Node isolate (cache misses / uncached).
+ * - CDN hits with Cache-Control s-maxage never enter this Map.
+ * - Multi-instance serverless does not share buckets across isolates.
+ * - Not a global security boundary; use platform Firewall/WAF for hard quotas.
+ *
+ * IP key: only `x-vercel-forwarded-for` (platform-owned). Generic XFF is ignored.
  */
 
 export type RateLimitResult = {
