@@ -4,7 +4,7 @@ import BlogList from '@/components/blog/BlogList';
 import SearchBar from '@/components/blog/SearchBar';
 import Pagination from '@/components/blog/Pagination';
 import PageSection from '@/components/layout/PageSection';
-import { getPaginatedPosts } from '@/lib/posts';
+import { getPaginatedPosts } from '@/server/content';
 import { PAGE_SIZE } from '@/lib/content-dirs';
 import { buildPageMetadata } from '@/lib/metadata';
 

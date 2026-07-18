@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import MetaBadge from '@/components/ui/MetaBadge';
-import { getAllProjectIds, getProjectById } from '@/lib/projects';
+import { getAllProjectIds, getProjectById } from '@/server/content';
 import { buildPageMetadata } from '@/lib/metadata';
 import { createDynamicRoute } from '@/lib/route-adapter';
 import { imageBlurProps } from '@/lib/image-blur-data';

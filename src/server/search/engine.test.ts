@@ -1,7 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import type { PostMeta } from '@/types';
-import { searchPosts, searchPostsCached, toSearchResultItem } from './index';
-import { FUSE_SEARCH_OPTIONS, SEARCH_RESULT_LIMIT } from './options';
+import {
+  FUSE_SEARCH_OPTIONS,
+  SEARCH_RESULT_LIMIT,
+  toSearchResultItem,
+} from '@/lib/search';
+import { searchPosts, searchPostsCached } from './engine';
 
 const MOCK_POSTS: PostMeta[] = [
   {

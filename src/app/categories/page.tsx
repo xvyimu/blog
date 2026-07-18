@@ -3,7 +3,7 @@ import Link from 'next/link';
 import ArchiveCard from '@/components/layout/ArchiveCard';
 import EmptyState from '@/components/layout/EmptyState';
 import PageSection from '@/components/layout/PageSection';
-import { getAllCategories } from '@/lib/categories';
+import { getAllCategories } from '@/server/content';
 import { buildPageMetadata } from '@/lib/metadata';
 
 export const metadata: Metadata = buildPageMetadata({

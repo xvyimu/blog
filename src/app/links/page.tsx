@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { LinksDirectory } from '@/components/links/LinksDirectory';
 import PageSection from '@/components/layout/PageSection';
-import { getAllLinkCategories } from '@/lib/links';
+import { getAllLinkCategories } from '@/server/content';
 import { buildPageMetadata } from '@/lib/metadata';
 
 export const metadata: Metadata = buildPageMetadata({

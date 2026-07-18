@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import PageSection from '@/components/layout/PageSection';
-import { getAllSeriesSlugs, getSeriesBySlug } from '@/lib/series';
+import { getAllSeriesSlugs, getSeriesBySlug } from '@/server/content';
 import { SITE_CONFIG } from '@/lib/site';
 import { buildPageMetadata } from '@/lib/metadata';
 import { createDynamicRoute } from '@/lib/route-adapter';

@@ -1,11 +1,11 @@
 /**
- * search/ — shared blog search core.
+ * search/ — 前后端共享搜索契约。
  *
- *   options.ts    — Fuse weights / limits
- *   types.ts      — wire types for API + client
- *   project.ts    — PostMeta → SearchResultItem
- *   engine.ts     — pure searchPosts / searchPostsCached
- *   rate-limit.ts — process-local API throttle
+ *   options.ts  — Fuse 权重与查询限制
+ *   types.ts    — API 与客户端共用的 wire 类型
+ *   project.ts  — PostMeta → SearchResultItem 纯投影
+ *
+ * 服务端引擎与限流实现位于 `@/server/search`，本目录不得重导出。
  */
 export {
   FUSE_SEARCH_OPTIONS,
@@ -22,11 +22,3 @@ export type {
   SearchErrorState,
 } from './types';
 export { toSearchResultItem, toSearchResultMatches } from './project';
-export { searchPosts, searchPostsCached } from './engine';
-export {
-  checkSearchRateLimit,
-  clientKeyFromRequest,
-  resetSearchRateLimitForTests,
-  SEARCH_RATE_LIMIT_MAX,
-  SEARCH_RATE_LIMIT_WINDOW_MS,
-} from './rate-limit';

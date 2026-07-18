@@ -129,7 +129,7 @@ describe('BlogPostPage', () => {
 
   it('renders series and category badges when a post has no tags', async () => {
     vi.resetModules();
-    vi.doMock('@/lib/posts', () => ({
+    vi.doMock('@/server/content', () => ({
       getAllPostSlugs: () => [emptyTagPost.slug],
       getPostBySlug: (slug: string) => (slug === emptyTagPost.slug ? emptyTagPost : null),
       getAdjacentPosts: () => ({ prev: null, next: null }),
@@ -149,7 +149,7 @@ describe('BlogPostPage', () => {
       '/categories/Custom%20Notes',
     );
 
-    vi.doUnmock('@/lib/posts');
+    vi.doUnmock('@/server/content');
     vi.resetModules();
   });
 });

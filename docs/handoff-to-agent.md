@@ -1,6 +1,6 @@
 # 西江月博客 · Agent 接手指南
 
-> 状态：当前维护版（2026-07-17）。详细模块说明见 [architecture.md](./architecture.md)，当前未完成事项只以根 [TODO](../TODO.md) 为准。
+> 状态：当前维护版（2026-07-18）。详细模块说明见 [architecture.md](./architecture.md)，当前未完成事项只以根 [TODO](../TODO.md) 为准。
 
 ## 1. 接手顺序
 
@@ -28,23 +28,26 @@
 
 - HTML 因每请求 CSP nonce 动态渲染；不要为 SSG 放宽 `script-src` 到 `unsafe-inline`。
 - 本地内容路径由 `src/lib/content-dirs.ts` 统一定义，MDX/JSON 通过 repository 和 Zod schema 读取。
+- 页面与 Route Handler 的内容读取经 `src/server/content`；底层 repository/cache 仍在 `src/lib/`，不复制第二套实现。
 - 缓存统一使用 `createCache<T>`；测试替换 ContentSource 后调用 `resetAllCaches()`。
 - `globals.css` 不承载本地 CSS `@import` 链。全局语义 CSS 由根 layout 显式导入，home/search/links/project-detail 样式由最近路由入口导入。
-- 搜索生产路径为 Node runtime `GET /api/search`；当前规模不上外部搜索服务。
+- 搜索生产路径为 Node runtime `GET /api/search`：限流与用例在 `src/server/search`，共享契约在 `src/lib/search`；当前规模不上外部搜索服务。
+- 客户端与 `src/lib` 不得导入 `@/server`；由 `src/lib/module-boundaries.test.ts` 守门。
 - 图片默认只允许本地资源，`next.config.ts` 的 `remotePatterns` 保持为空，除非明确审核远程主机。
 
 ## 4. 常用修改落点
 
-| 需求           | 首要文件                                         | 必须联查                                    |
-| -------------- | ------------------------------------------------ | ------------------------------------------- |
-| 新增文章       | `content/blog/*.mdx`                             | schema、SEO、RSS、sitemap、内链             |
-| 修改项目       | `data/projects.json`                             | `src/lib/projects.ts`、图片、项目页测试     |
-| 修改收藏       | `data/links.json`                                | `src/lib/links.ts`、首页预览、SEO 检查      |
-| 新增路由       | `src/app/**`                                     | metadata、导航、sitemap、测试               |
-| 修改搜索       | `src/app/api/search/route.ts`、`src/lib/search/` | [API 文档](./API.md)、客户端 hook、限流测试 |
-| 修改视觉 token | `src/app/styles/tokens.css`                      | 明暗主题、CSS 规范、移动端与截图检查        |
-| 修改 CSP       | `src/proxy.ts`、`src/lib/csp.ts`                 | layout、第三方脚本、ADR、生产 header        |
-| 修改 CI/部署   | `.github/workflows/ci.yml`                       | Node 22、RSS 一致性、smoke、回滚            |
+| 需求             | 首要文件                                                                         | 必须联查                                                                  |
+| ---------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| 新增文章         | `content/blog/*.mdx`                                                             | schema、SEO、RSS、sitemap、内链                                           |
+| 修改项目         | `data/projects.json`                                                             | `src/lib/projects.ts`、图片、项目页测试                                   |
+| 修改收藏         | `data/links.json`                                                                | `src/lib/links.ts`、首页预览、SEO 检查                                    |
+| 新增路由         | `src/app/**`                                                                     | metadata、导航、sitemap、测试                                             |
+| 修改搜索         | `src/app/api/search/route.ts`、`src/server/search/`、`src/lib/search/`（仅契约） | [API 文档](./API.md)、客户端 hook、`module-boundaries`、限流/service 测试 |
+| 修改内容读取入口 | `src/server/content`、相关 `src/app/**` 页面                                     | 底层 `src/lib/*` repository、页面测试 mock 路径                           |
+| 修改视觉 token   | `src/app/styles/tokens.css`                                                      | 明暗主题、CSS 规范、移动端与截图检查                                      |
+| 修改 CSP         | `src/proxy.ts`、`src/lib/csp.ts`                                                 | layout、第三方脚本、ADR、生产 header                                      |
+| 修改 CI/部署     | `.github/workflows/ci.yml`                                                       | Node 22、RSS 一致性、smoke、回滚                                          |
 
 ## 5. 验证矩阵
 

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import EmptyState from '@/components/layout/EmptyState';
 import PageSection from '@/components/layout/PageSection';
 import ProjectCard from '@/components/projects/ProjectCard';
-import { getAllProjects } from '@/lib/projects';
+import { getAllProjects } from '@/server/content';
 import { buildPageMetadata } from '@/lib/metadata';
 
 export const metadata: Metadata = buildPageMetadata({

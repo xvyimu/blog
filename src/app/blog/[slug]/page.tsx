@@ -13,7 +13,7 @@ import {
   getAdjacentPosts,
   getRelatedPosts,
   getSeriesPosts,
-} from '@/lib/posts';
+} from '@/server/content';
 import { inferCategory } from '@/lib/category-rules';
 import { buildPageMetadata } from '@/lib/metadata';
 import { createDynamicRoute } from '@/lib/route-adapter';

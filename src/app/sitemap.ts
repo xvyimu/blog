@@ -1,9 +1,11 @@
 import type { MetadataRoute } from 'next';
-import { getAllPosts } from '@/lib/posts';
-import { getAllTags } from '@/lib/tags';
-import { getAllCategories } from '@/lib/categories';
-import { getAllProjects } from '@/lib/projects';
-import { getAllSeries } from '@/lib/series';
+import {
+  getAllCategories,
+  getAllPosts,
+  getAllProjects,
+  getAllSeries,
+  getAllTags,
+} from '@/server/content';
 import { SITE_CONFIG } from '@/lib/site';
 
 function toUtcDate(date: string): Date {

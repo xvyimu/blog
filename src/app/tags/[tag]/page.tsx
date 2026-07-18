@@ -1,7 +1,6 @@
 import BlogList from '@/components/blog/BlogList';
 import PageSection from '@/components/layout/PageSection';
-import { getTagNameBySlug, getAllTagSlugs } from '@/lib/tags';
-import { getPostsByTag } from '@/lib/posts';
+import { getAllTagSlugs, getPostsByTag, getTagNameBySlug } from '@/server/content';
 import { SITE_CONFIG } from '@/lib/site';
 import { buildPageMetadata } from '@/lib/metadata';
 import { createDynamicRoute } from '@/lib/route-adapter';

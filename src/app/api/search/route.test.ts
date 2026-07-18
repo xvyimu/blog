@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { PostMeta } from '@/types';
-import { resetSearchRateLimitForTests, SEARCH_RATE_LIMIT_MAX } from '@/lib/search';
+import { resetSearchRateLimitForTests, SEARCH_RATE_LIMIT_MAX } from '@/server/search';
 
 const MOCK_POSTS: PostMeta[] = [
   {
@@ -19,11 +19,11 @@ const MOCK_POSTS: PostMeta[] = [
   },
 ];
 
-vi.mock('@/lib/posts', () => ({
+vi.mock('@/server/content', () => ({
   getAllPosts: vi.fn(() => MOCK_POSTS),
 }));
 
-import { getAllPosts } from '@/lib/posts';
+import { getAllPosts } from '@/server/content';
 import { GET } from './route';
 
 function requestFor(path: string, headers?: HeadersInit) {

@@ -1,27 +1,25 @@
 import { NextResponse } from 'next/server';
-import { getAllPosts } from '@/lib/posts';
 import {
-  searchPostsCached,
   SEARCH_MAX_LIMIT,
   SEARCH_MAX_QUERY_LENGTH,
   SEARCH_RESULT_LIMIT,
-  checkSearchRateLimit,
-  clientKeyFromRequest,
   type SearchResponse,
   type SearchErrorBody,
 } from '@/lib/search';
+import {
+  checkSearchRateLimit,
+  clientKeyFromRequest,
+  searchPublishedPosts,
+} from '@/server/search';
 
-/** Explicit Node runtime — Fuse + fs-backed posts are not edge-targeted. */
+/** 显式 Node runtime：Fuse 与基于 fs 的内容读取不面向 edge。 */
 export const runtime = 'nodejs';
 
 /**
  * GET /api/search?q=&limit=
  *
- * Server-side Fuse over the same PostMeta index as the blog list.
- * Wire payload is SearchResultItem (projected — no searchText).
- *
- * Rate limit is origin best-effort (process Map). CDN-cached 200s do not count.
- * See rate-limit.ts and docs/API.md.
+ * 服务端用例：参数校验与 HTTP 映射；搜索与限流委托 `@/server/search`。
+ * 限流在 query 校验之前执行；内容异常映射为无泄露 500。
  */
 export async function GET(request: Request) {
   const key = clientKeyFromRequest(request);
@@ -72,8 +70,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const posts = getAllPosts();
-    const results = searchPostsCached(posts, q, limit);
+    const results = searchPublishedPosts(q, limit);
     const body: SearchResponse = {
       query: q,
       results,
@@ -85,7 +82,7 @@ export async function GET(request: Request) {
       headers: cacheHeaders(),
     });
   } catch (error) {
-    // Log only the error class; never expose filesystem paths or content to clients.
+    // 只记录错误类别，绝不向客户端暴露路径或内容。
     console.error(
       '[search] internal failure',
       error instanceof Error ? error.name : typeof error,
@@ -101,9 +98,8 @@ export async function GET(request: Request) {
   }
 }
 
+/** 成功响应缓存头：短 CDN 缓存降低冷启动；缓存命中不计入进程限流。 */
 function cacheHeaders(): Record<string, string> {
-  // Content is build-time MDX; short CDN cache is safe and cuts cold latency.
-  // Note: cached responses bypass the process-local rate limiter (by design).
   return {
     'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
   };

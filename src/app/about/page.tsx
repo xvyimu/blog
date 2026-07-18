@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import MdxContent from '@/components/blog/MdxContent';
 import PageSection from '@/components/layout/PageSection';
 import { SITE_CONFIG } from '@/lib/site';
-import { getAboutContent } from '@/lib/about';
+import { getAboutContent } from '@/server/content';
 import { buildPageMetadata } from '@/lib/metadata';
 
 export const metadata: Metadata = buildPageMetadata({

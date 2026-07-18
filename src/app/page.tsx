@@ -1,7 +1,5 @@
 import Link from 'next/link';
-import { getAllPosts } from '@/lib/posts';
-import { getFeaturedProjects } from '@/lib/projects';
-import { getAllLinkCategories } from '@/lib/links';
+import { getAllLinkCategories, getAllPosts, getFeaturedProjects } from '@/server/content';
 import { slugifyTag } from '@/lib/utils';
 import { organizationSchema, websiteSchema, toJsonLd } from '@/lib/jsonld';
 import ProjectCard from '@/components/projects/ProjectCard';

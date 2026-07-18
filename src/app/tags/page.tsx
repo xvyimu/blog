@@ -3,7 +3,7 @@ import Link from 'next/link';
 import EmptyState from '@/components/layout/EmptyState';
 import PageSection from '@/components/layout/PageSection';
 import MetaBadge from '@/components/ui/MetaBadge';
-import { getAllTags } from '@/lib/tags';
+import { getAllTags } from '@/server/content';
 import { buildPageMetadata } from '@/lib/metadata';
 
 export const metadata: Metadata = buildPageMetadata({

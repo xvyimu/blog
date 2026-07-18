@@ -1,6 +1,6 @@
 # Search API
 
-> 状态：当前契约（2026-07-17）。实现位于 `src/app/api/search/route.ts`，运行时为 Node.js。
+> 状态：当前契约（2026-07-18）。Route Handler 位于 `src/app/api/search/route.ts`；搜索用例/引擎/限流位于 `src/server/search/`；共享 DTO/常量/投影位于 `src/lib/search/`。运行时为 Node.js。
 
 博客搜索 UI 使用一个公开、只读的 Route Handler。接口不要求登录，不接受请求体。
 
@@ -92,12 +92,23 @@ curl "http://localhost:3000/api/search?q=Next.js&limit=5"
 
 `useServerSearch` 在输入停止 180ms 后发送请求，查询变化时中止旧请求。客户端区分 query too long、rate limited、network、bad request 和 server error；429 会解析 `Retry-After`。
 
+## 实现位置
+
+| 职责                          | 路径                              |
+| ----------------------------- | --------------------------------- |
+| HTTP 参数/状态码/缓存头映射   | `src/app/api/search/route.ts`     |
+| 搜索用例（读内容 + 缓存引擎） | `src/server/search/service.ts`    |
+| Fuse 引擎与引用缓存           | `src/server/search/engine.ts`     |
+| 进程内限流                    | `src/server/search/rate-limit.ts` |
+| 内容 facade                   | `src/server/content`              |
+| 共享 DTO / 常量 / 纯投影      | `src/lib/search/`                 |
+
 ## 变更检查
 
 修改 route、搜索 DTO、常量、缓存或限流后，至少运行：
 
 ```bash
-pnpm test src/app/api/search/route.test.ts src/lib/search src/components/blog/useServerSearch.test.tsx
+pnpm test src/lib/module-boundaries.test.ts src/server/search src/app/api/search/route.test.ts src/components/blog/useServerSearch.test.tsx
 pnpm typecheck
 pnpm lint
 ```

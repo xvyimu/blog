@@ -4,7 +4,7 @@ import {
   getAllCategorySlugs,
   getPostsByCategory,
   isValidCategory,
-} from '@/lib/categories';
+} from '@/server/content';
 import { SITE_CONFIG } from '@/lib/site';
 import { buildPageMetadata } from '@/lib/metadata';
 import { createDynamicRoute } from '@/lib/route-adapter';

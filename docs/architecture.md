@@ -1,6 +1,6 @@
 # 项目架构说明
 
-> 状态：当前维护版（2026-07-17）
+> 状态：当前维护版（2026-07-18）
 >
 > 这份文档是面向接手者的架构摘要：说明内容从哪里来、如何被解析、页面如何渲染、样式和安全边界在哪里，以及新增能力时应该落在哪一层。更细的运行状态与后续方向见 [`docs/handoff-to-agent.md`](./handoff-to-agent.md)，具体设计决策见 `docs/specs/` 与 `docs/adr/`。全栈审查：[`docs/full-stack-audit-2026-07-17.md`](./full-stack-audit-2026-07-17.md)。
 
@@ -41,21 +41,25 @@
 
 ```text
 content/ + data/
-  -> src/lib/* repositories, schemas, query helpers
-  -> src/app/* route pages and metadata
-  -> src/components/* UI composition
+  -> src/lib/* repositories, schemas, cache, shared search contract
+  -> src/server/* content facade + search service/engine/rate-limit
+  -> src/app/* route pages, Route Handlers, metadata
+  -> src/components/* UI composition（仅共享 DTO/纯函数 + HTTP）
   -> src/app/styles/* design tokens and CSS modules
   -> public/feed.* + sitemap + robots + OG images
 ```
 
-| 层     | 目录                               | 职责                                                                |
-| ------ | ---------------------------------- | ------------------------------------------------------------------- |
-| 内容源 | `content/`, `data/`                | 原始 MDX、关于页、作品集 JSON、收藏链接 JSON                        |
-| 数据层 | `src/lib/`                         | 文件读取、frontmatter 解析、Zod 校验、缓存、查询、SEO/JSON-LD 辅助  |
-| 路由层 | `src/app/`                         | App Router 页面、动态 metadata、sitemap、robots、manifest、OG image |
-| 组件层 | `src/components/`                  | 页面结构、交互组件、通用 UI primitive                               |
-| 样式层 | `src/app/styles/`                  | 设计令牌、全局基础、页面/组件 CSS、响应式覆盖                       |
-| 验证层 | `*.test.ts(x)`, `e2e/`, `scripts/` | 单元/集成/E2E/SEO/Bundle/生产内容检查                               |
+| 层       | 目录                               | 职责                                                                             |
+| -------- | ---------------------------------- | -------------------------------------------------------------------------------- |
+| 内容源   | `content/`, `data/`                | 原始 MDX、关于页、作品集 JSON、收藏链接 JSON                                     |
+| 数据层   | `src/lib/`                         | 文件读取、frontmatter 解析、Zod 校验、缓存、查询、共享搜索契约、SEO/JSON-LD 辅助 |
+| 服务端层 | `src/server/`                      | 内容访问 facade、搜索用例/引擎/限流；仅供 App Router / Route Handler 使用        |
+| 路由层   | `src/app/`                         | App Router 页面、动态 metadata、sitemap、robots、manifest、OG image、Search API  |
+| 组件层   | `src/components/`                  | 页面结构、交互组件、通用 UI primitive                                            |
+| 样式层   | `src/app/styles/`                  | 设计令牌、全局基础、页面/组件 CSS、响应式覆盖                                    |
+| 验证层   | `*.test.ts(x)`, `e2e/`, `scripts/` | 单元/集成/E2E/SEO/Bundle/生产内容检查、模块边界测试                              |
+
+依赖方向：`components/hooks -> lib（共享契约）+ HTTP`；`app -> server + lib`；`server -> lib`。禁止 client/`src/lib` 反向导入 `@/server`（见 `src/lib/module-boundaries.test.ts`）。
 
 ### 样式加载
 
@@ -76,6 +80,7 @@ content/blog/*.mdx
   -> lib/schemas/post-frontmatter.ts
   -> lib/posts/repository.ts
   -> lib/posts/query.ts + search-text.ts
+  -> server/content（页面/Route Handler 统一入口）
   -> app/blog/* pages
   -> components/blog/*
 ```
@@ -104,6 +109,7 @@ content/blog/*.mdx
 data/projects.json
   -> lib/json-content-repository.ts
   -> lib/projects.ts
+  -> server/content
   -> app/projects/* pages
   -> components/projects/ProjectCard
 ```
@@ -116,6 +122,7 @@ data/projects.json
 data/links.json
   -> lib/json-content-repository.ts
   -> lib/links.ts
+  -> server/content
   -> app/links/page.tsx
   -> components/links/LinksDirectory
   -> components/home/CuratedLinksPreview
@@ -130,7 +137,7 @@ data/links.json
 | `/`                                     | `src/app/page.tsx`               | posts、projects、links                            |
 | `/about`                                | `src/app/about/page.tsx`         | `content/about.mdx`                               |
 | `/blog`                                 | `src/app/blog/page.tsx`          | paginated posts；搜索走 API（无全站索引 payload） |
-| `/api/search`                           | `src/app/api/search/route.ts`    | 服务端 Fuse + 投影 `SearchResultItem` + 进程限流  |
+| `/api/search`                           | `src/app/api/search/route.ts`    | `server/search` 用例 + Fuse 投影 + 进程限流       |
 | `/blog/[slug]`                          | `src/app/blog/[slug]/page.tsx`   | post detail + related posts                       |
 | `/projects`                             | `src/app/projects/page.tsx`      | projects JSON                                     |
 | `/projects/[id]`                        | `src/app/projects/[id]/page.tsx` | project detail                                    |
@@ -167,7 +174,7 @@ HomeCtaSection
 
 约定：
 
-- 组件不直接读文件系统，内容读取留在 `src/lib/` 或页面服务端层；
+- 组件不直接读文件系统，也不导入 `@/server`；内容读取经 `src/server/content`，底层 repository 仍在 `src/lib/`；
 - 归档页与列表页优先复用 `PageSection`、`ArchiveCard`、`MetaBadge`；
 - shadcn CLI 在当前 Node 24 + zod exports 组合下不可用，继续维护本地已落地的 shadcn-style primitive，不运行 CLI 覆盖。
 - 布局/纸感用 BEM CSS；交互用 `components/ui/*`（`size=cta|icon-toolbar|search`）；禁止业务侧再写 `.btn` / `.icon-btn`。
@@ -176,12 +183,15 @@ HomeCtaSection
 
 ```text
 生产: SearchBar (无 posts) → useServerSearch → GET /api/search
-       → getAllPosts() + searchPostsCached → SearchResultItem 投影
-测试: SearchBar posts={mock} → useFuseSearch → 同投影类型
+       → server/search（限流 + searchPublishedPosts）
+       → server/content.getAllPosts + searchPostsCached → SearchResultItem 投影
+测试: SearchBar posts={mock} → useFuseSearch → 同投影类型（仅共享契约）
 ```
 
-- 共享权重：`src/lib/search/options.ts`
-- 限流：进程内 60 req / IP / min（`rate-limit.ts`），配合 `s-maxage=60`
+- 共享契约/常量/投影：`src/lib/search/`（无引擎、无限流）
+- 服务端用例/引擎/限流：`src/server/search/`
+- 限流：进程内 60 req / IP / min，配合 `s-maxage=60`
+- 边界门禁：`src/lib/module-boundaries.test.ts` 阻断 client/lib → server
 - 规模：~14 文不上外部引擎；见 `docs/bem-search-architecture-2026-07-12.md`
 
 ## 6. CSS 与视觉架构

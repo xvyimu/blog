@@ -3,7 +3,7 @@ import Link from 'next/link';
 import ArchiveCard from '@/components/layout/ArchiveCard';
 import EmptyState from '@/components/layout/EmptyState';
 import PageSection from '@/components/layout/PageSection';
-import { getAllSeries } from '@/lib/series';
+import { getAllSeries } from '@/server/content';
 import { buildPageMetadata } from '@/lib/metadata';
 import { formatDate } from '@/lib/utils';
 

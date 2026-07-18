@@ -1,5 +1,5 @@
 import { ImageResponse } from 'next/og';
-import { getPostBySlug, getAllPostSlugs } from '@/lib/posts';
+import { getPostBySlug, getAllPostSlugs } from '@/server/content';
 import { SITE_CONFIG } from '@/lib/site';
 
 export const alt = SITE_CONFIG.name;
