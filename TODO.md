@@ -1,9 +1,10 @@
 # 西江月博客 · 当前待办
 
 > 状态：**工程侧可无条件推进的事项已关闭**；仅剩外部账号或条件触发。  
-> 更新：2026-07-18（归档）  
+> 更新：2026-07-18（归档收口）  
 > 生产：`https://incca.ccwu.cc`  
-> 功能基线：`a91a07d` · 运营工程：`96e0214` · 阻塞记录：`fa3e579`  
+> 归档 HEAD：`61ffd47`  
+> 功能基线：`a91a07d` · 运营工程：`96e0214` · 硬阻塞记录：`fa3e579`  
 > 手册：[ops-deferred-work-plan.md](./docs/ops-deferred-work-plan.md)  
 > 自动检查：`pnpm check:ops-readiness`（可选 `-- --live`）  
 > run 归档：
@@ -23,7 +24,7 @@
       工程：`hasData=true`；CLI **无法**导出明细。控制台只读六页或正式 metrics API。  
       **禁止** Lighthouse 代填。状态：`engineering_ready_waiting_samples` · §5。
 
-## 条件触发（未到门槛 = 正确终态）
+## 条件触发（未到门槛 = 正确终态，不是欠账）
 
 - [ ] **外部搜索评估**：≥200 文或搜索 p95 证据 → ADR；当前 14 文 Fuse。
 - [ ] **正文图 LQIP**：`public/images/blog/**` 有图 → `pnpm gen:blur && pnpm check:blur`。
@@ -37,6 +38,7 @@
 | 逻辑前后端分层 | `src/server` + 边界测试已上线 | run `frontend-backend-boundary` · `a91a07d` |
 | 延后运营工程化 | 就绪门禁 + 手册 + live 实测   | run `deferred-ops-readiness` · `96e0214`    |
 | 生产质量       | CI/e2e/deploy/smoke 绿        | launch-baseline                             |
+| 阶段归档       | TODO/记忆/run 索引收口        | `61ffd47`                                   |
 
 更早 P0–P10 见历史报告与 `docs/superpowers/runs/`，不在此重复。
 
@@ -46,3 +48,4 @@
 2. 状态为 `blocked_auth` / `not_triggered` / `engineering_ready_waiting_samples` → **不要**开无关重构。
 3. 用户完成 GSC/Bing/RUM 后，只更新基线文档中的 pending 行。
 4. 若希望 Agent 代写 DNS TXT：提供 Cloudflare `Zone.DNS Edit` token（环境变量，勿入库）。
+5. 用户说「你自己看着做 / 我不会」时：穷尽自动路径到硬阻塞并写清，**禁止**甩回逐步人工操作清单代替执行。
