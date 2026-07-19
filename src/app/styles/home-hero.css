@@ -96,8 +96,9 @@
 
 .editorial-hero__image {
   object-fit: cover;
-  opacity: 0.78;
-  filter: grayscale(0.45) saturate(0.34) contrast(0.9) brightness(1.04);
+  /* Keep a light paper-gallery treatment now that real screenshots are in place. */
+  opacity: 0.96;
+  filter: saturate(0.92) contrast(1.02) brightness(1.01);
 }
 
 .editorial-hero__metrics {

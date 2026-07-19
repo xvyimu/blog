@@ -23,7 +23,7 @@ describe('Footer', () => {
   it('renders GitHub social link', () => {
     render(<Footer />);
     const ghLink = screen.getByLabelText('GitHub');
-    expect(ghLink).toHaveAttribute('href', 'https://github.com/yuanjia1314');
+    expect(ghLink).toHaveAttribute('href', 'https://github.com/xvyimu');
     expect(ghLink).toHaveAttribute('target', '_blank');
     expect(ghLink).toHaveAttribute('rel', 'noopener noreferrer');
   });

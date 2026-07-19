@@ -5,7 +5,7 @@
     "description": "精心收录 AI 大模型 API 的导航站，基于 Next.js + Supabase + Redis 构建，支持用户提交、分类浏览、搜索和状态监控。",
     "tags": ["Next.js", "Supabase", "TypeScript", "Redis"],
     "url": "https://yuanjia1314.ccwu.cc",
-    "github": "https://github.com/yuanjia1314/nav-site",
+    "github": "https://github.com/xvyimu/nav-site",
     "image": "/images/projects/nav-site.png",
     "featured": true,
     "year": 2026
@@ -15,7 +15,8 @@
     "title": "个人博客",
     "description": "基于 Next.js 16 App Router + Tailwind v4 + MDX 的技术博客兼作品集，支持明暗主题、全文 RSS、Giscus 评论。",
     "tags": ["Next.js", "Tailwind CSS", "MDX", "TypeScript"],
-    "github": "https://github.com/yuanjia1314/blog",
+    "url": "https://incca.ccwu.cc",
+    "github": "https://github.com/xvyimu/blog",
     "image": "/images/projects/blog.png",
     "featured": true,
     "year": 2026
@@ -25,7 +26,7 @@
     "title": "RelayCheck Desktop",
     "description": "NewAPI / OneAPI / Sub2API 本地运营控制台，Go + React + SQLite 全栈桌面应用。",
     "tags": ["Go", "React", "SQLite", "Desktop"],
-    "github": "https://github.com/yuanjia1314/relaycheck-desktop",
+    "github": "https://github.com/xvyimu/relaycheck-desktop",
     "image": "/images/projects/relaycheck.png",
     "featured": true,
     "year": 2025
@@ -35,7 +36,7 @@
     "title": "Domain Check",
     "description": "基于 Cloudflare Worker + Worker KV 构建的域名到期监控仪表盘，支持到期邮件提醒。",
     "tags": ["Cloudflare", "Workers", "Domain"],
-    "github": "https://github.com/yuanjia1314/domain-check",
+    "github": "https://github.com/yutian81/domain-check",
     "image": "/images/projects/domain-check.png",
     "featured": false,
     "year": 2025
@@ -45,7 +46,8 @@
     "title": "QingHome",
     "description": "一个精美的现代化个人主页，支持明暗双主题、卡片式布局和多数据来源，部署于 Cloudflare Workers。",
     "tags": ["React", "Vite", "Cloudflare", "CSS"],
-    "github": "https://github.com/yuanjia1314/QingHome",
+    "url": "https://notett.com",
+    "github": "https://github.com/yutian81/QingHome",
     "image": "/images/projects/qinghome.png",
     "featured": false,
     "year": 2025
@@ -55,7 +57,7 @@
     "title": "Hermes Hug",
     "description": "专用于 Hugging Face 的 Hermes 部署方案，零成本运行 AI 推理。",
     "tags": ["Hugging Face", "Shell", "AI"],
-    "github": "https://github.com/yuanjia1314/hermes-hug",
+    "github": "https://github.com/yutianqq/hermes-hug",
     "image": "/images/projects/hermes-hug.png",
     "featured": false,
     "year": 2025

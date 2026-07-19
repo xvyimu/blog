@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/react';
 import { getAllPosts } from '@/lib/posts';
-import { getFeaturedProjects } from '@/lib/projects';
+import { getAllProjects, getFeaturedProjects } from '@/lib/projects';
 
 vi.mock('next/link', () => ({
   default: ({
@@ -124,9 +124,12 @@ describe('HomePage', () => {
     }
   });
 
-  it('displays post count in hero stats', async () => {
+  it('displays post and project totals in hero stats', async () => {
     await renderHomePage();
     const allPosts = getAllPosts();
+    const allProjects = getAllProjects();
     expect(screen.getByText(allPosts.length.toString())).toBeInTheDocument();
+    expect(screen.getByText(allProjects.length.toString())).toBeInTheDocument();
+    expect(screen.getByText('个项目')).toBeInTheDocument();
   });
 });

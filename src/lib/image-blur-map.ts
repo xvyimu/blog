@@ -1,18 +1,18 @@
-/** Auto-generated blur placeholders for local project images.
+/** Auto-generated blur placeholders for local project and blog images.
  * Re-run: pnpm gen:blur  (or node scripts/generate-blur-data.mjs)
  * Do not edit by hand.
  */
 export const IMAGE_BLUR_DATA: Record<string, string> = {
   '/images/projects/blog.png':
-    'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAADwAQCdASoMAAcAA8BgJagCdLoAAwhAW5AA8G5889fUjBXFb/5Cm2uPt7OiIAAA',
+    'data:image/webp;base64,UklGRiYAAABXRUJQVlA4IBoAAAAwAQCdASoMAAcAA8BgJZwAA3AA/vE8NwgAAA==',
   '/images/projects/domain-check.png':
-    'data:image/webp;base64,UklGRjwAAABXRUJQVlA4IDAAAADwAQCdASoMAAcAA8BgJagCdLoAAwgWZAAA/GsJYUH/4uPuZ9sW0y/SmkiGf8wAAAA=',
+    'data:image/webp;base64,UklGRkQAAABXRUJQVlA4IDgAAACwAQCdASoMAAcAA8BgJZgCdADx9MAAAMtIcJR4vdyeIriMg84kL5dLCv9zsbs99EPeHgDyEgAAAA==',
   '/images/projects/hermes-hug.png':
-    'data:image/webp;base64,UklGRjQAAABXRUJQVlA4ICgAAADQAQCdASoMAAcAA8BgJagCdAEOuwXvAAD6G3ENZXY/+g++3efJ1AAA',
+    'data:image/webp;base64,UklGRi4AAABXRUJQVlA4ICIAAACwAQCdASoMAAcAA8BgJYwCdAEO+mBgAP70InmE0F8xc8AA',
   '/images/projects/nav-site.png':
-    'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAABwAQCdASoMAAcAA8BgJagCdAFAAAD+6FS84fc65vF5h1/dOPnyvlYTvJ04AAAA',
+    'data:image/webp;base64,UklGRioAAABXRUJQVlA4IB4AAAAwAQCdASoMAAcAA8BgJaQAA3AA/vJXQxvgBdHAQAA=',
   '/images/projects/qinghome.png':
-    'data:image/webp;base64,UklGRjQAAABXRUJQVlA4ICgAAACwAQCdASoMAAcAA8BgJagCdAEOuwSAAP0vOymvP4lh8+V8rCckY4AA',
+    'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAABwAQCdASoMAAcAA8BgJYwC06FAAAD+8fYaeRDOkyfOOG5/cXDWZsP9M4srUUAA',
   '/images/projects/relaycheck.png':
-    'data:image/webp;base64,UklGRjQAAABXRUJQVlA4ICgAAACQAQCdASoMAAcAA8BgJaAAAuab25AA+huiDor//4XF/30L/FsvgAAA',
+    'data:image/webp;base64,UklGRjgAAABXRUJQVlA4ICwAAACwAQCdASoMAAcAA8BgJQBOgCHfTAwAAP71PzOZ1kwSGX9kW82ST494oHBgAA==',
 } as const;

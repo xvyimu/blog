@@ -46,7 +46,7 @@ export const SITE_CONFIG = {
     name: '雨天狂奔',
   },
   social: {
-    github: 'https://github.com/yuanjia1314',
+    github: 'https://github.com/xvyimu',
     twitter: '',
     email: '',
   },

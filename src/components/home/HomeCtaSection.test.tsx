@@ -42,7 +42,7 @@ describe('HomeCtaSection', () => {
   it('renders GitHub link with correct href', () => {
     render(<HomeCtaSection />);
     const ghLink = screen.getByText('GitHub').closest('a');
-    expect(ghLink).toHaveAttribute('href', 'https://github.com/yuanjia1314');
+    expect(ghLink).toHaveAttribute('href', 'https://github.com/xvyimu');
     expect(ghLink).toHaveAttribute('target', '_blank');
   });
 

@@ -1,5 +1,10 @@
 import Link from 'next/link';
-import { getAllLinkCategories, getAllPosts, getFeaturedProjects } from '@/server/content';
+import {
+  getAllLinkCategories,
+  getAllPosts,
+  getAllProjects,
+  getFeaturedProjects,
+} from '@/server/content';
 import { slugifyTag } from '@/lib/utils';
 import { organizationSchema, websiteSchema, toJsonLd } from '@/lib/jsonld';
 import ProjectCard from '@/components/projects/ProjectCard';
@@ -58,6 +63,7 @@ export default async function HomePage() {
     ...allPosts.filter((post) => post.featured),
     ...allPosts.filter((post) => !post.featured),
   ].slice(0, 6);
+  const allProjects = getAllProjects();
   const featuredProjects = getFeaturedProjects();
   const linkCategories = getAllLinkCategories();
   const previewLinkCategories = selectHomeLinkPreviewCategories(linkCategories);
@@ -80,10 +86,7 @@ export default async function HomePage() {
         dangerouslySetInnerHTML={{ __html: siteLd }}
       />
       <div className="home-paper">
-        <EditorialHero
-          postCount={allPosts.length}
-          projectCount={featuredProjects.length}
-        />
+        <EditorialHero postCount={allPosts.length} projectCount={allProjects.length} />
 
         <ManifestoSection />
 

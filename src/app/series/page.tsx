@@ -40,7 +40,7 @@ export default function SeriesPage() {
               meta={`${formatDate(series.startDate)} - ${formatDate(series.endDate)}`}
             >
               <ol className="archive-card__sequence">
-                {series.posts.slice(0, 4).map((post, index) => (
+                {series.posts.map((post, index) => (
                   <li key={post.slug} className="archive-card__sequence-item">
                     <span className="archive-card__sequence-index">{index + 1}</span>
                     <span className="archive-card__sequence-title">{post.title}</span>

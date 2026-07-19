@@ -34,6 +34,16 @@ describe('SeriesPage', () => {
     }
   });
 
+  it('lists every post in a series, not a truncated preview', () => {
+    render(<SeriesPage />);
+
+    for (const series of getAllSeries()) {
+      for (const post of series.posts) {
+        expect(screen.getByText(post.title)).toBeInTheDocument();
+      }
+    }
+  });
+
   it('links to series detail pages', () => {
     render(<SeriesPage />);
 
