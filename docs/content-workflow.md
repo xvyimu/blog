@@ -98,6 +98,22 @@ license: MIT
 
 因此新增文章时不需要手写这些字段，但要保证标题层级清晰、标签命名稳定。
 
+### 内容快照（生产读取）
+
+生产默认从 **`generated/content-snapshot/`** 读文章与花园图（`CONTENT_BACKEND=snapshot`），不再在请求路径扫 MDX。
+
+修改 `content/blog/*.mdx` 后必须：
+
+```bash
+pnpm content:build
+# 将 generated/content-snapshot/* 的 diff 一并提交（与 public/feed.* 同模式）
+```
+
+- 开发默认 `CONTENT_BACKEND=fs`：改 MDX 即时生效，无需每次重建快照。
+- 快照只含 **published !== false** 的文章；草稿不会进入生产快照。
+- 回滚：`CONTENT_BACKEND=fs` 或非 production `NODE_ENV`。
+- CI 会在 quality job 中重跑 `content:build` 并对 `generated/content-snapshot` 做 `git diff --exit-code`。
+
 ### 草稿机制
 
 当前逻辑是：

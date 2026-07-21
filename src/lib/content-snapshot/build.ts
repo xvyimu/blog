@@ -32,11 +32,13 @@ function toMeta(post: PostFull): PostMeta {
 /**
  * Stable content fingerprint (not cryptographic integrity for security —
  * just reproducible drift detection across builds).
+ * Includes full body text so equal-length MDX rewrites still change the hash.
  */
 export function computeContentHash(posts: PostFull[]): string {
-  const lines = sortPostsByDateDesc(posts).map(
-    (p) => `${p.slug}\t${p.date}\t${p.title}\t${p.content.length}`,
-  );
+  const lines = sortPostsByDateDesc(posts).map((p) => {
+    const bodyFp = createHash('sha256').update(p.content, 'utf8').digest('hex');
+    return `${p.slug}\t${p.date}\t${p.title}\t${bodyFp}`;
+  });
   return createHash('sha256').update(lines.join('\n'), 'utf8').digest('hex');
 }
 

@@ -126,6 +126,13 @@ describe('buildContentSnapshotPayload', () => {
     expect(a.positions).toEqual(b.positions);
     expect(a.manifest.contentHash).toBe(b.manifest.contentHash);
   });
+
+  it('changes contentHash when body is rewritten at the same length', () => {
+    const a = post('x', 'abcd', { date: '2026-06-01', title: 'Same' });
+    const b = post('x', 'wxyz', { date: '2026-06-01', title: 'Same' });
+    expect(a.content.length).toBe(b.content.length);
+    expect(computeContentHash([a])).not.toBe(computeContentHash([b]));
+  });
 });
 
 describe('write + read snapshot', () => {
