@@ -33,6 +33,11 @@ export const remarkWikilink: Plugin<[], Root> = function remarkWikilink() {
         children.push({
           type: 'link',
           url: wikilinkHref(match.slug),
+          data: {
+            hProperties: {
+              'data-wikilink': match.slug,
+            },
+          },
           children: [{ type: 'text', value: match.label }],
         });
         cursor = start + match.raw.length;

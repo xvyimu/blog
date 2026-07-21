@@ -6,6 +6,7 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import { remarkWikilink } from '@/lib/posts/remark-wikilink';
 import CodeBlock from './CodeBlock';
 import ImageZoom from './ImageZoom';
+import WikilinkPopover from './WikilinkPopover';
 
 const prettyCodeOptions: Partial<Options> = {
   theme: {
@@ -36,6 +37,7 @@ export default function MdxContent({ source }: { source: string }) {
         components={{
           pre: CodeBlock,
           img: ImageZoom,
+          a: WikilinkPopover,
         }}
         options={{
           mdxOptions: {

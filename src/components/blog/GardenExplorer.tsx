@@ -36,6 +36,7 @@ export default function GardenExplorer({ graph }: { graph: GardenGraph }) {
   const [series, setSeries] = useState('');
   const [tag, setTag] = useState('');
   const [focus, setFocus] = useState<string | null>(null);
+  const [hoverSlug, setHoverSlug] = useState<string | null>(null);
   const [positions, setPositions] = useState<Map<string, GardenViewPosition> | null>(
     null,
   );
@@ -73,6 +74,17 @@ export default function GardenExplorer({ graph }: { graph: GardenGraph }) {
     () => filterGardenGraph(graph, { series, tag }),
     [graph, series, tag],
   );
+
+  const neighborsOf = useMemo(() => {
+    const map = new Map<string, Set<string>>();
+    for (const edge of filtered.edges) {
+      if (!map.has(edge.from)) map.set(edge.from, new Set());
+      if (!map.has(edge.to)) map.set(edge.to, new Set());
+      map.get(edge.from)!.add(edge.to);
+      map.get(edge.to)!.add(edge.from);
+    }
+    return map;
+  }, [filtered.edges]);
 
   const titleBySlug = useMemo(
     () => new Map(graph.nodes.map((n) => [n.slug, n.title])),
@@ -329,7 +341,9 @@ export default function GardenExplorer({ graph }: { graph: GardenGraph }) {
               const from = positions.get(edge.from);
               const to = positions.get(edge.to);
               if (!from || !to) return null;
-              const dim = focus != null && focus !== edge.from && focus !== edge.to;
+              const highlight = hoverSlug ?? focus;
+              const dim =
+                highlight != null && highlight !== edge.from && highlight !== edge.to;
               return (
                 <line
                   key={`${edge.from}->${edge.to}`}
@@ -348,8 +362,11 @@ export default function GardenExplorer({ graph }: { graph: GardenGraph }) {
             {filtered.nodes.map((node) => {
               const p = positions.get(node.slug);
               if (!p) return null;
-              const active = focus === node.slug;
-              const dim = focus != null && !active;
+              const highlight = hoverSlug ?? focus;
+              const active = highlight === node.slug;
+              const neighbors = highlight ? neighborsOf.get(highlight) : undefined;
+              const dim =
+                highlight != null && !active && !(neighbors?.has(node.slug) ?? false);
               return (
                 <g key={node.slug} transform={`translate(${p.x},${p.y})`}>
                   <circle
@@ -372,6 +389,8 @@ export default function GardenExplorer({ graph }: { graph: GardenGraph }) {
                         window.location.assign(`/blog/${node.slug}`);
                       }
                     }}
+                    onMouseEnter={() => setHoverSlug(node.slug)}
+                    onMouseLeave={() => setHoverSlug(null)}
                     onFocus={() => setFocus(node.slug)}
                     onBlur={() => setFocus(null)}
                   />
