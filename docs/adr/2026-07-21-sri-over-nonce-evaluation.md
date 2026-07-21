@@ -2,11 +2,12 @@
 
 - Status: Evaluation (not yet enabled in production)
 - Date: 2026-07-21
-- Related: `docs/adr/2026-07-17-csp-nonce-over-ssg.md`, `next.config.ts`, `src/proxy.ts`, `docs/architecture-optimization-research-2026-07-21-v3.md` R-E
+- Updated: 2026-07-21 (local prep — algorithm shape corrected; no production enable)
+- Related: `docs/adr/2026-07-17-csp-nonce-over-ssg.md`, `next.config.ts`, `src/proxy.ts`, `docs/architecture-optimization-research-2026-07-21-v3.md` R-E, `content/blog/2026-07-csp-nonce-and-sri.mdx`
 
 ## Context
 
-Next.js 16.2 introduced experimental Subresource Integrity (SRI) support for static assets emitted to `/_next/static/*`. SRI adds an `integrity` attribute (SHA-384 hash) to `<script>` and `<link rel="stylesheet">` tags so browsers refuse to execute resources whose hash mismatches, defending against CDN or build-cache tampering.
+Next.js 16.2 introduced experimental Subresource Integrity (SRI) support for static assets emitted to `/_next/static/*`. SRI adds an `integrity` attribute (SHA hash) to `<script>` and `<link rel="stylesheet">` tags so browsers refuse to execute resources whose hash mismatches, defending against CDN or build-cache tampering.
 
 The project currently uses a strict per-request CSP nonce model (see `2026-07-17-csp-nonce-over-ssg.md`): document routes render dynamically, `script-src 'nonce-...' 'strict-dynamic'` gates inline hydration scripts, and static assets are independently cacheable at the edge. This model gives a strong XSS baseline but does not verify static asset integrity at the browser level.
 
@@ -31,6 +32,22 @@ SRI does **not** replace nonce CSP; it adds a layer for static resources that no
 3. **Experimental status carries regression risk.** Next 16.2 SRI is flagged experimental; enabling it in production would require a full Lighthouse + bundle + e2e regression pass and a rollback path.
 4. **Cost is non-trivial.** Build time increases (hash computation for every chunk), HTML payload grows (`integrity` attributes on every script/link tag), and the benefit is defence-in-depth rather than user-visible.
 
+## Config shape (Next 16.2.9, verified in `config-shared.d.ts`)
+
+```ts
+// CORRECT — object with optional algorithm
+experimental: {
+  sri: {
+    algorithm?: 'sha256' | 'sha384' | 'sha512'; // default implementation-defined; prefer sha384
+  };
+}
+
+// WRONG — boolean is NOT the type of experimental.sri in 16.2.9
+// experimental: { sri: true }
+```
+
+Do not copy older blog posts or untyped snippets that say `sri: true` without checking the installed Next types.
+
 ## Trigger conditions for re-evaluation
 
 Revisit this ADR and move toward enabling SRI when **any** of the following becomes true:
@@ -42,37 +59,60 @@ Revisit this ADR and move toward enabling SRI when **any** of the following beco
 
 ## Preview verification checklist (when triggered)
 
-Before enabling in production, run on a preview branch:
+Before enabling in production, run on a **preview branch** (not `master`):
 
-`ash
+1. **Enable the flag** in `next.config.ts`:
 
-# 1. Enable the flag
+   ```ts
+   experimental: {
+     viewTransition: true,
+     turbopackFileSystemCacheForDev: true,
+     sri: { algorithm: 'sha384' },
+   }
+   ```
 
-# next.config.ts: experimental: { sri: true }
+2. **Production-shaped local build** (never commit feed pollution from localhost):
 
-# 2. Build and verify integrity attributes appear
+   ```bash
+   # PowerShell
+   $env:NEXT_PUBLIC_SITE_URL = 'https://incca.ccwu.cc'
+   pnpm build
+   # search build output / .next for integrity=
+   rg -n "integrity=" .next -g "*.html" | Select-Object -First 10
+   ```
 
-NEXT_PUBLIC_SITE_URL=https://incca.ccwu.cc pnpm build
-grep -r 'integrity=' .next/server/app/ | head -5
+3. **CSP regression** — document routes still emit per-request nonce; no `unsafe-inline` introduced:
 
-# 3. CSP regression check
+   ```bash
+   pnpm check:seo
+   pnpm test
+   ```
 
-pnpm check:seo
-pnpm test
+4. **Bundle budget**:
 
-# 4. Bundle budget regression
+   ```bash
+   pnpm exec tsx scripts/check-bundle-budget.ts
+   ```
 
-pnpm exec tsx scripts/check-bundle-budget.ts
+5. **E2E**:
 
-# 5. E2E regression
+   ```bash
+   pnpm test:e2e
+   ```
 
-pnpm test:e2e
+6. **Deploy Vercel preview** (requires explicit user auth) and verify in browser DevTools that script tags carry `integrity` and CSP still has nonce. Simulate tamper only in preview (never production).
 
-# 6. Lighthouse regression (CI e2e job runs it)
+If any step regresses, abandon the branch and record the failure here. After a successful preview, update this ADR Status to Accepted (enable prod) or keep Evaluation with notes.
 
-`
+## Local prep status (2026-07-21)
 
-If any step regresses, abandon the branch and record the failure here.
+| Step                          | Status                                     |
+| ----------------------------- | ------------------------------------------ |
+| Types verified in Next 16.2.9 | Done — `sri?: { algorithm?: … }`           |
+| ADR checklist corrected       | Done (this file)                           |
+| Production config changed     | **No** — still disabled                    |
+| Local build with SRI on       | Optional; do not leave flag on after trial |
+| Vercel preview deploy         | **Blocked** — no deploy authorization      |
 
 ## Alternatives considered
 
@@ -85,3 +125,4 @@ If any step regresses, abandon the branch and record the failure here.
 - SRI remains documented but disabled. No production behavior change.
 - Future maintainers can fast-track to preview verification when a trigger condition fires.
 - This ADR should be updated (status to Accepted or Rejected) once a preview run completes.
+- Concept explainer for humans: `/blog/csp-nonce-and-sri`.

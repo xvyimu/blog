@@ -26,7 +26,7 @@
 
 ## 条件触发（未到门槛 = 正确终态，不是欠账）
 
-- [ ] **外部搜索评估**：≥200 文或搜索 p95 证据 → ADR；当前 14 文 Fuse。
+- [ ] **外部搜索评估**：≥200 文或搜索 p95 证据 → ADR；当前 20 文 Fuse。
 - [ ] **正文图 LQIP**：`public/images/blog/**` 有图 → `pnpm gen:blur && pnpm check:blur`。
 - [ ] **prose/article-ui 下沉**：Coverage + 层叠方案 + ADR。
 - [ ] **Cache Components**：外部数据/ISR/失效需求 + 迁移指南。
@@ -41,8 +41,9 @@
 - [x] G2 hover 邻居高亮（`hoverSlug` + `neighborsOf` dim）+ 测试
 - [x] G3 wikilink popover（`/api/preview/[slug]` + `WikilinkPopover`）+ 测试
 - [ ] G2 可选：更多布局算法 / 导出 PNG
-- [ ] Q28 正文概念链加深 4–8 篇 MDX（需用户授权改 content/）
-- [ ] Q29 SRI preview 验证（需 Vercel preview deploy 授权）
+- [x] Q28 正文概念链加深 6 篇 MDX（2026-07 · Compiler/VT/CSP·SRI/花园/MDX管线/Turbopack DX）
+- [x] Q29 本地 SRI 准备（类型形状 + ADR checklist；**未** enable、**未** deploy）
+- [ ] Q29 Vercel preview 验证（需 deploy 授权）
 
 ## 已完成索引（本阶段）
 

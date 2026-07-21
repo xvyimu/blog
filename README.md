@@ -49,7 +49,7 @@ NEXT_PUBLIC_GISCUS_CATEGORY_ID=your_category_id
 .
 ├─ content/                  # 内容源
 │  ├─ about.mdx              # 关于页
-│  └─ blog/*.mdx             # 博客文章（14 篇）
+│  └─ blog/*.mdx             # 博客文章（20 篇）
 ├─ data/
 │  ├─ projects.json          # 作品集数据
 │  └─ links.json             # 导航收藏数据

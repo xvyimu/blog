@@ -1,0 +1,99 @@
+---
+title: 'CSP Nonce 与 SRI：互补而不是互相替换'
+description: '个人站点如何同时理解 per-request CSP nonce 与 Subresource Integrity：各自守什么、何时评估 SRI、绝不能用 unsafe-inline 换 SSG。'
+date: '2026-07-21'
+tags: ['安全', 'Next.js', '性能优化']
+published: true
+featured: false
+license: 'CC-BY-4.0'
+---
+
+> 结论先说：**nonce 防的是「谁能在我的文档里跑脚本」；SRI 防的是「静态文件被调包」。** 二者表面都写在 HTML 上，威胁模型不同。用 `unsafe-inline` 换回全量 SSG，是用 XSS 面换构建便利，本站明确拒绝。
+
+App Router 动态渲染背景见 [[nextjs-app-router|Next.js App Router 实战]]；入口层 TLS / 反代加固可对照 [[nginx-reverse-proxy|Nginx 反向代理]] 与 [[vps-initial-setup|VPS 初始化清单]]。
+
+## 威胁模型对照
+
+| 攻击面 | CSP nonce | SRI |
+| --- | --- | --- |
+| 注入的 inline `<script>` | 无匹配 nonce → 拦截 | 不管 inline |
+| 被允许的外链脚本内容被篡改 | 若已在白名单/带 nonce 则可能执行 | hash 不匹配 → 拦截 |
+| 构建缓存 / CDN 上的 `/_next/static/*` 被替换 | 通常不校验内容 | 校验 |
+| CSS 被篡改 | 取决于 `style-src` | 可对 link 加 integrity |
+
+所以：**SRI 不能替代 nonce**；关掉 nonce 只开 SRI，inline 注入仍然活口。
+
+## 本站 nonce 模型（摘要）
+
+1. 每个文档请求生成随机 nonce（`src/proxy.ts`）。
+2. `script-src 'nonce-…' 'strict-dynamic'`（具体指令以仓库 CSP 模块为准）。
+3. 文档路由因此倾向动态渲染——HTML 必须带当次 nonce。
+4. 静态资源仍可在边缘长期缓存；**缓存的是 JS/CSS 文件，不是带 nonce 的 HTML**。
+
+这与「为了 SSG 全站静态化而 `unsafe-inline`」是两条路。ADR 结论写在 `docs/adr/2026-07-17-csp-nonce-over-ssg.md`：安全基线优先。
+
+## SRI 在 Next 16.2 里长什么样
+
+Next 在 `experimental.sri` 提供可选算法：
+
+```ts
+// 评估时的形状（不要默认合入生产）
+experimental: {
+  sri: { algorithm: 'sha384' }, // 'sha256' | 'sha384' | 'sha512'
+}
+```
+
+启用后，构建产物里的 script/link 会带 `integrity="sha384-…"`。浏览器在执行前重算 hash。
+
+评估阶段注意：
+
+1. **实验旗标**有回归面：hydration、流式、中间件改写 HTML 都要回归。
+2. **与 nonce 并存**时，确认 CSP 未误杀带 integrity 的标签（一般不冲突）。
+3. **本地 build 污染**：未设置 `NEXT_PUBLIC_SITE_URL` 时生产构建会直接失败；设置后还要防止 RSS 等生成物被写成 localhost——验证完应还原。
+
+完整预览清单见仓库 `docs/adr/2026-07-21-sri-over-nonce-evaluation.md`（Status=Evaluation）。
+
+## 错误示范
+
+### 1. 用 unsafe-inline 换 SSG
+
+```http
+Content-Security-Policy: script-src 'unsafe-inline' https:
+```
+
+换回全静态 HTML 的代价是：任何能往页面塞字符串的洞都变成 XSS。个人博客「没后台」不等于「没 XSS」——Markdown/MDX、第三方评论、被污染的依赖都在攻击面里。
+
+### 2. 以为 SRI 等于「可以信任任意 CDN」
+
+SRI 只保证**你构建时钉死的那份字节**。供应链投毒发生在 `pnpm install` 之后、构建之前，SRI 照样给恶意包发证。依赖审计与锁文件仍不可少。
+
+### 3. 在 JSON API 上纠结 nonce
+
+像 `/api/preview/[slug]` 这种纯 JSON 预览接口（wikilink hover 卡片用）**不需要** nonce；它的风险在输入校验、缓存是否泄露草稿、以及响应是否投影多余字段。花园 popover 链路见 [[digital-garden-force-layout|数字花园]] 与 [[mdx-remark-pipeline|MDX 渲染管线]]。
+
+## 实施顺序（建议）
+
+1. **守住 nonce CSP**（已完成基线）。
+2. **SRI ADR 评估**（已记录，未启用）。
+3. 触发条件满足时：preview 分支开启 `experimental.sri` → build → 抽查 `integrity=` → CSP / e2e / bundle 回归。
+4. 任一步回归 → 放弃启用，更新 ADR 为 Rejected 或继续 Evaluation。
+
+## 与性能的关系
+
+动态文档 HTML 会损失部分「整站纯静态」缓存收益，但在小规模内容站点，HTML 体积与 TTFB 通常不是主矛盾——LCP 仍多在字体/图片/首屏组件，见 [[web-performance-optimization|性能优化]]。**不要为了省一次 HTML 动态渲染而拆安全基线。**
+
+## 检查清单
+
+- [ ] CSP 仍每请求 nonce，无 `unsafe-inline` 脚本逃生口
+- [ ] SRI 仅在评估/预览，未默认进生产 config
+- [ ] `experimental.sri` 使用 `{ algorithm }` 对象形，而非想当然的布尔
+- [ ] 预览验证包含 CSP 与 e2e，不只看 HTML 里有没有 integrity
+- [ ] 密钥与 token 仍不进仓库
+
+## 延伸阅读
+
+- [[nextjs-app-router|Next.js App Router 实战]]
+- [[web-performance-optimization|Web 性能优化实战]]
+- [[nginx-reverse-proxy|Nginx 反向代理与负载均衡]]
+- [[vps-initial-setup|VPS 初始化安全与运维配置清单]]
+- [[mdx-remark-pipeline|MDX 渲染管线与 remark 插件]]

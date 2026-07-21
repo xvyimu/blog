@@ -1,0 +1,101 @@
+---
+title: 'Turbopack 文件系统缓存与本地 DX'
+description: 'Next 16.2 的 turbopackFileSystemCacheForDev 解决什么、不解决什么，以及如何避免把 dev 缓存问题误判成业务 bug。'
+date: '2026-07-21'
+tags: ['Next.js', 'DevOps', '性能优化']
+published: true
+featured: false
+license: 'CC-BY-4.0'
+---
+
+> 结论先说：FS cache 只加速**本地 dev 冷启动与增量编译**，不改变生产 `next build` 产物语义。遇到「我这能跑、CI 不行」，先怀疑环境与缓存，再怀疑业务代码——但**禁止**用删缓存当唯一修复手段而不留根因。
+
+生产构建与 App Router 约束见 [[nextjs-app-router|Next.js App Router 实战]]；流水线门禁思维见 [[cicd-pipeline-design|CI/CD 流水线设计]] 与 [[git-hooks-github-actions|Git Hooks 与 GitHub Actions]]。
+
+## 开关位置
+
+```ts
+// next.config.ts
+experimental: {
+  // 仅 dev；名称里的 ForDev 不是装饰
+  turbopackFileSystemCacheForDev: true,
+}
+```
+
+同时本站启用了：
+
+- `reactCompiler: true`（见 [[react-compiler-in-practice|React Compiler]]）
+- `experimental.viewTransition: true`（见 [[nextjs-view-transitions|View Transitions]]）
+
+三者正交：Compiler/VT 影响产物与运行时；FS cache 影响**你等待编译的时间**。
+
+## 它缓存什么
+
+典型包括：
+
+- Turbopack 的模块图与编译中间态
+- 跨 `pnpm dev` 会话可复用的文件系统快照
+
+它不缓存：
+
+- 生产 `.next` 的完整发布语义（那是 `pnpm build` 的职责）
+- 远程 CI 的机器状态（CI 每次干净环境，本身就没有你的 dev 缓存）
+- 浏览器 Cache Storage / CDN
+
+所以：**打开 FS cache 之后，以 `pnpm build` + CI 为真相**，不要只拿 dev HMR 愉快当验收。
+
+## 何时值得开
+
+| 情况 | 建议 |
+| --- | --- |
+| 冷启动经常 > 数秒，且项目中等以上 | 开 |
+| 极小仓库，冷启动本就可忽略 | 可关，减少「缓存脏了」变量 |
+| 正在排查「只在 dev 复现」的诡异 UI | 临时关或清缓存对比 |
+| CI | 无关；CI 跑 build/test 不依赖该旗标 |
+
+## 故障排查顺序
+
+1. **复现是否仅 dev？** 若 `pnpm build && pnpm start` 正常 → 优先缓存 / HMR / 懒编译路径。
+2. **清 Next 缓存再试**：删除 `.next` 后 `pnpm dev`（不要顺手 `git clean -fdx` 清掉有用本地文件）。
+3. **对比关闭旗标**：`turbopackFileSystemCacheForDev: false` 是否消失。
+4. **仍存在则当业务 bug**：用测试与生产构建钉死。
+
+把「重启一下就好了」写进团队记忆，却不记录是哪一层缓存，下次还会再踩。
+
+## 与内容工作流
+
+MDX 增删（见 [[mdx-remark-pipeline|MDX 管线]]）后，dev 应能热更新列表与详情。若新文章 404：
+
+1. 文件名是否符合 `YYYY-MM-slug.mdx`
+2. frontmatter 是否通过 Zod
+3. `published: false` 是否把自己藏了
+4. 是否盯着旧的 dev 进程（换分支后未重启）
+
+花园图依赖正文 wikilink 扫描（[[digital-garden-force-layout|数字花园]]）；内容变更后若图不更新，先硬刷新再查缓存层。
+
+## CI 对照
+
+本地 DX 优化**不能**替代：
+
+- `pnpm typecheck`
+- `pnpm test`
+- `pnpm build`（需正确的 `NEXT_PUBLIC_SITE_URL`）
+- lint-staged / audit 门禁
+
+Hooks 与远程流水线分工见 [[git-hooks-github-actions|Git Hooks 文]]：本地挡愚蠢错误，CI 挡环境假设。
+
+## 检查清单
+
+- [ ] 知悉旗标仅 dev
+- [ ] 生产验收始终走 `pnpm build`
+- [ ] 记录清缓存步骤，而不只说「重启试试」
+- [ ] 与 Compiler / VT 变更分开评估回归
+- [ ] CI 绿才能合入，不拿本机 dev 截图代替
+
+## 延伸阅读
+
+- [[nextjs-app-router|Next.js App Router 实战]]
+- [[react-compiler-in-practice|React Compiler 生产笔记]]
+- [[nextjs-view-transitions|Next.js View Transitions 实战]]
+- [[cicd-pipeline-design|CI/CD 流水线设计]]
+- [[git-hooks-github-actions|Git Hooks 与 GitHub Actions 自动化]]

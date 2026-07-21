@@ -1,0 +1,96 @@
+---
+title: '数字花园：力导向布局与 wikilink 网络'
+description: '在 Next 内做次级 /garden：无 d3 的力导向、筛选、拖拽存视图、hover 邻居高亮，以及 wikilink popover 的数据契约。'
+date: '2026-07-21'
+tags: ['Next.js', 'React', '前端']
+published: true
+featured: false
+license: 'CC-BY-4.0'
+---
+
+> 结论先说：数字花园是**探索面**，不是第二首页。力导向只服务「看见概念邻接」；`prefers-reduced-motion` 时退回列表；wikilink 预览走轻量 JSON，绝不把整篇 MDX 塞进 hover 卡片。
+
+内容从 MDX 到页面的管线见 [[mdx-remark-pipeline|MDX 渲染管线]]；客户端交互成本与 [[react-compiler-in-practice|React Compiler]]、[[web-performance-optimization|性能优化]] 同一套尺子。
+
+## 为什么是次级路由
+
+把力导向图塞进首页有三个问题：
+
+1. **品牌违和**：首页是阅读路径与精选，不是研究画布。
+2. **性能**：主路径 LCP 不该绑在 canvas/SVG 模拟上。
+3. **规模**：二十篇量级时，全站图「玩具感」重于信息增益。
+
+因此 `/garden` 保持次级入口；文章页只提供折叠邻接与反链，满足「这篇连去哪 / 谁链过来」。
+
+## 图从哪来
+
+1. remark 插件把 `[[slug]]` / `[[slug|label]]` 编成指向 `/blog/{slug}` 的链接，并打上 `data-wikilink`。
+2. 构图阶段扫描可见文章正文，抽出有向边；坏链 fail-closed（构建或读取时报错，而不是静默丢边）。
+3. `getGardenGraph()` 投影为 `{ nodes, edges }`，节点带 title/tags/series，**不含正文**。
+
+正文互链是网络的主干；文末「延伸阅读」列表也应使用同一套 wikilink 语法，避免两套链接语义。
+
+## 力导向：无 d3 的确定性布局
+
+本站 `layoutForceGraph` 是纯函数：相同节点/边 → 相同坐标。好处：
+
+- 单测可断言相对位置，不必 mock 随机数
+- SSR/CSR 不会「同构闪一下」
+- 依赖面小，符合「不引入不必要重依赖」
+
+迭代次数、斥力、弹簧参数写在模块默认值里；调参凭观感可以，但**合入前固定种子行为**，避免每次刷新像换了一张图。
+
+筛选（专题 / 标签）先过滤图，再布局。过滤后的子图若为空，UI 提示清筛选，而不是渲染空白 SVG。
+
+## 交互层
+
+| 能力 | 行为 |
+| --- | --- |
+| 拖拽 | pointer 事件改坐标；超过阈值才算拖，否则 click 打开文章 |
+| 保存视图 | `localStorage` 存筛选 + 坐标；仅本机，不进账号体系 |
+| hover 高亮 | `hoverSlug` + 邻接表；非邻居边/点 dim |
+| 键盘 | 节点 `tabIndex=0`，Enter/Space 导航；focus 与 hover 共用高亮通道 |
+| 减少动效 | 关闭力导向与拖拽画布，只留边列表与笔记列表 |
+
+hover 只服务指针用户；键盘依赖 focus。触屏没有稳定 hover——列表出口必须始终可用。
+
+## G3：wikilink popover
+
+```text
+hover/focus wikilink
+  → GET /api/preview/:slug
+  → { slug, title, description, date, category, tags }
+  → 卡片；缓存于组件 state，二次 hover 不打网
+```
+
+契约要点：
+
+1. **无 `content` 字段**——防止把整篇 MDX 打进客户端缓存。
+2. **404 静默**——加载态可保留，不弹错。
+3. **文本 React 转义**——禁止 `dangerouslySetInnerHTML`。
+4. **草稿不可见**——底层 `getPostBySlug` 已按 `published` 过滤。
+
+非 wikilink 的 `<a>`（外链、锚点）不带 `data-wikilink`，组件直接渲染普通锚点，不发请求。
+
+## 与性能 / Compiler
+
+- 邻接表 `Map<string, Set<string>>` 适合 `useMemo`：语义清晰。
+- 力导向结果变更频率低（筛选变化时），不要绑在每次 mousemove。
+- Compiler（[[react-compiler-in-practice|笔记]]）可兜底忘写的浅层 memo；布局纯函数仍建议显式缓存。
+
+## 检查清单
+
+- [ ] `/garden` 非首页主路径
+- [ ] 减少动效路径可完成全部阅读任务
+- [ ] preview API 不返回正文
+- [ ] 坏链 fail-closed
+- [ ] 拖拽与 click 阈值分离
+- [ ] popover 有自动化测试（fetch mock + hover）
+
+## 延伸阅读
+
+- [[mdx-remark-pipeline|MDX 渲染管线与 remark 插件]]
+- [[nextjs-app-router|Next.js App Router 实战]]
+- [[react-compiler-in-practice|React Compiler 生产笔记]]
+- [[web-performance-optimization|Web 性能优化实战]]
+- [[csp-nonce-and-sri|CSP Nonce 与 SRI]]

@@ -10,7 +10,7 @@
 | 功能基线 | `ef77986` G2 数字花园上线              | CI 待 v3 ship 后刷新；上一可验证 CI [29631593044](https://github.com/xvyimu/blog/actions/runs/29631593044)（`a91a07d`） |
 | 运营工程 | `96e0214` · 记录 `238f2c7` / `fa3e579` | CI [29632273522](https://github.com/xvyimu/blog/actions/runs/29632273522) · [ops plan](./ops-deferred-work-plan.md)     |
 | CI 结论  | `success`                              | quality、bundle-analyze、e2e、deploy 全绿                                                                               |
-| 内容规模 | 14 篇文章、6 个项目、10 类 123 条收藏  | 本地 MDX/JSON                                                                                                           |
+| 内容规模 | 20 篇文章、6 个项目、10 类 123 条收藏  | 本地 MDX/JSON                                                                                                           |
 | GSC/Bing | pending（需 Google 登录）              | 见 [ops-deferred-work-plan.md](./ops-deferred-work-plan.md) §10                                                         |
 | RUM p75  | pending（API 不可导出；控制台只读）    | Speed Insights `hasData=true`，无 CLI 明细                                                                              |
 

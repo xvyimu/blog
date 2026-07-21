@@ -1,0 +1,117 @@
+---
+title: 'Next.js View Transitions 实战：从 Link 到可感知导航'
+description: '在 App Router 里启用 View Transitions：transitionTypes、减少动效偏好、与性能预算共存的写法。'
+date: '2026-07-21'
+tags: ['Next.js', 'React', '性能优化']
+published: true
+featured: false
+license: 'CC-BY-4.0'
+---
+
+> 结论先说：View Transitions 是**渐进增强**，不是品牌大片。只在列表→详情这类「空间连续」导航上点缀；必须尊重 `prefers-reduced-motion`，且绝不能拖坏 INP。
+
+服务端组件与导航模型见 [[nextjs-app-router|Next.js App Router 实战]]；动效与 CWV 的关系见 [[web-performance-optimization|Web 性能优化实战]]。
+
+## 浏览器能力与 Next 封装
+
+[View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API) 让浏览器在 DOM 更新前后截两帧，做交叉淡化或共享元素动画。Next.js 16 通过 `experimental.viewTransition` 与 `<Link transitionTypes>` 把路由切换接到该 API。
+
+```ts
+// next.config.ts
+experimental: {
+  viewTransition: true,
+}
+```
+
+```tsx
+import Link from 'next/link';
+
+<Link href={`/blog/${post.slug}`} transitionTypes={['blog-detail']}>
+  {post.title}
+</Link>
+```
+
+要点：
+
+1. **`transitionTypes` 是 `string[]`**，不是字符串。写 `transitionTypes="blog-detail"` 会在类型检查阶段失败。
+2. 类型名是**约定字符串**，用于 CSS 里按类型定制动画；全站先从一个类型开始，避免命名爆炸。
+3. 不支持的浏览器会静默退化为普通导航——这是正确默认，不要 polyfill 强行补动画。
+
+## 什么时候该用
+
+| 适合 | 不适合 |
+| --- | --- |
+| 博客卡片 → 文章详情 | 搜索结果每一击 |
+| 同布局下的分页切换（谨慎） | 表单提交后的重定向 |
+| 作品集网格 → 详情 | 主题切换（用 CSS 变量即可） |
+
+14→20 篇规模的站点，**一处**列表到详情就够建立「纸面翻页」的记忆点。全站每个链都加 transition 会让用户觉得站点「粘」。
+
+## CSS 侧最小集
+
+```css
+/* 仅在用户未要求减少动效时启用 */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 180ms;
+    animation-timing-function: ease-out;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+```
+
+本站已有 `usePrefersReducedMotion` 钩子（花园图关闭力导向时会用到，见 [[digital-garden-force-layout|数字花园]]）。View Transitions 的减少动效应优先交给 **CSS 媒体查询**，避免 JS 与浏览器默认策略打架。
+
+## 与 RSC / 流式渲染的边界
+
+View Transition 发生在**客户端导航**完成、DOM 提交的窗口。它不改变：
+
+- 服务端组件数据获取
+- Suspense 流式块的到达顺序
+- CSP nonce 每请求生成
+
+因此：**不要**为了「动画更顺」把本该服务端的数据拉到客户端。动画只装饰已决定的 HTML 差分。
+
+## 性能预算
+
+1. **时长 ≤ 200ms**。超过就变成等待，而不是连贯。
+2. **避免大面积 filter / blur**。低端机 GPU 会掉帧，直接伤 INP。
+3. **共享元素要克制**。`view-transition-name` 冲突会导致整页闪烁；命名空间按路由前缀划分。
+4. **测量**：Chrome Performance 面板看 transition 期间长任务；对照 [[web-performance-optimization|性能文]] 的 INP 阈值。
+
+## 与 React Compiler 的协作
+
+Compiler（见 [[react-compiler-in-practice|React Compiler 生产笔记]]）降低导航后无关子树重渲染，让 transition 截到的「新帧」更干净。二者正交：一个管渲染成本，一个管帧间插值。
+
+## 故障排查
+
+| 现象 | 排查 |
+| --- | --- |
+| 完全无动画 | 系统是否开了减少动效；`viewTransition` 是否在 config；浏览器是否支持 |
+| 整页白闪 | 是否有冲突的 `view-transition-name`；旧页是否在 transition 中卸载过快 |
+| 类型报错 | `transitionTypes` 是否写成了字符串而非数组 |
+| 仅生产无动画 | 是否被旧版浏览器或内嵌 WebView 降级（属预期） |
+
+## 检查清单
+
+- [ ] `experimental.viewTransition: true`
+- [ ] `transitionTypes` 使用 `string[]`
+- [ ] 减少动效媒体查询覆盖 `::view-transition-*`
+- [ ] 只在 1～2 类导航启用
+- [ ] 未为动画牺牲 RSC 边界
+- [ ] 实验室 INP 未回退
+
+## 延伸阅读
+
+- [[nextjs-app-router|Next.js App Router 实战]]
+- [[web-performance-optimization|Web 性能优化实战]]
+- [[react-compiler-in-practice|React Compiler 生产笔记]]
+- [[digital-garden-force-layout|数字花园：力导向与 wikilink]]

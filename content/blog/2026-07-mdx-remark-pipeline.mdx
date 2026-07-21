@@ -1,0 +1,118 @@
+---
+title: 'MDX 渲染管线与 remark 插件：从 frontmatter 到 wikilink'
+description: '个人博客 MDX 链路拆解：frontmatter schema、仓库层、next-mdx-remote、remark-wikilink，以及组件映射的边界。'
+date: '2026-07-21'
+tags: ['Next.js', 'TypeScript', '前端']
+published: true
+featured: false
+license: 'CC-BY-4.0'
+---
+
+> 结论先说：MDX 管线要**分层**——解析 / 校验 / 查询 / 渲染各管一段。wikilink 属于编译期链接改写；popover 属于客户端增强。把两层揉进一个「万能 MDX 组件」会让测试与 CSP 边界一起糊掉。
+
+类型与 schema 纪律见 [[typescript-advanced-types|TypeScript 高级类型实战]]；页面渲染模型见 [[nextjs-app-router|Next.js App Router 实战]]。
+
+## 分层一览
+
+```text
+content/blog/*.mdx
+  → 读文件 (ContentSource)
+  → 拆 frontmatter + body (parse-frontmatter)
+  → Zod 校验 (postFrontmatterSchema)
+  → PostRepository 缓存 / 可见性过滤
+  → 页面 getPostBySlug / 列表 getAllPosts
+  → next-mdx-remote + remark/rehype
+  → MdxContent 组件映射 (a → WikilinkPopover, …)
+```
+
+每一层只依赖下一层的稳定接口。页面组件**不**直接 `fs.readFile`。
+
+## Frontmatter：单一 schema
+
+`postFrontmatterSchema`（Zod）是作者输入的 SSOT：
+
+- 必填：`title` / `description` / `date`（`YYYY-MM-DD`）
+- 常用：`tags` / `category` / `series` / `published` / `featured`
+- `.strict()`：未知字段直接失败——防止「随手加字段却没人消费」
+
+文件名约定 `YYYY-MM-slug.mdx`，`filenameToSlug` 去掉年月前缀。**slug 冲突在加载期抛错**，不要默默覆盖。
+
+分类可显式写 `category`；不写则按标签映射推断（`TAG_TO_CATEGORY`）。推断规则是数据，不是散落 if/else。
+
+## remark-wikilink
+
+语法：
+
+```md
+[[web-performance-optimization]]
+[[web-performance-optimization|Web 性能优化实战]]
+```
+
+插件职责：
+
+1. 解析 wiki 目标与可选 label
+2. 生成 `href=/blog/{slug}`
+3. 打上 `data-wikilink={slug}`，供客户端识别
+4. **不**在 remark 阶段发网络请求或读数据库
+
+坏链策略放在构图 / 反链索引：可见集合内找不到目标则失败，避免花园图出现悬空边。正文渲染期是否 fail-closed 取决于产品选择；本站构图路径选择严格。
+
+## 组件映射
+
+```tsx
+// 示意：MdxContent
+const components = {
+  a: WikilinkPopover,
+  // pre/code → CodeBlock …
+};
+```
+
+`WikilinkPopover`：
+
+- 有 `data-wikilink` → 可 hover 拉 `/api/preview/{slug}`
+- 无该属性 → 普通 `<a>`（外链、手动 markdown 链接）
+
+这保证 remark 只产声明式 HTML 语义，交互增强可测试、可关掉。
+
+## 代码高亮与 prose
+
+rehype-pretty-code + Shiki 在服务端出 HTML。注意：
+
+1. 高亮结果进入 HTML，仍受 CSP 约束（无随机 inline 脚本）。
+2. 主题切换若只改 CSS 变量，避免为高亮块再灌一套客户端 JS。
+3. prose 样式与组件样式分层（tokens → prose → 组件），防止「改卡片弄坏正文」。
+
+## 测试策略
+
+| 层 | 测什么 |
+| --- | --- |
+| schema | 合法 / 非法 frontmatter |
+| repository | slug、published 过滤、缓存引用 |
+| remark-wikilink | AST/HTML 中的 href 与 data 属性 |
+| preview route | 投影字段、404、无 content 泄露 |
+| WikilinkPopover | 不请求的外链、缓存、XSS 文本转义 |
+
+不要用「启动整站点一下」替代层测；e2e 留给导航与 CSP 冒烟。
+
+## 与安全 / 花园
+
+- 预览 API 与正文渲染分离 → 见 [[csp-nonce-and-sri|CSP Nonce 与 SRI]]、[[digital-garden-force-layout|数字花园]]
+- 作者内容默认不可信：即使是自己的 MDX，渲染路径也不应 `eval` 或裸 `dangerouslySetInnerHTML` 拼用户字符串
+- 图片路径校验在 schema（http(s) 或 `/` 开头）
+
+## 检查清单
+
+- [ ] frontmatter 只经 Zod strict schema
+- [ ] 页面只打 server facade，不直读 fs
+- [ ] wikilink 与外链语义分离（`data-wikilink`）
+- [ ] preview 与 MDX body 字段分离
+- [ ] 关键层有单测，不靠手工点
+- [ ] 新增文章文件名与 slug 规则一致
+
+## 延伸阅读
+
+- [[nextjs-app-router|Next.js App Router 实战]]
+- [[typescript-advanced-types|TypeScript 高级类型实战]]
+- [[digital-garden-force-layout|数字花园：力导向与 wikilink]]
+- [[csp-nonce-and-sri|CSP Nonce 与 SRI]]
+- [[react-compiler-in-practice|React Compiler 生产笔记]]

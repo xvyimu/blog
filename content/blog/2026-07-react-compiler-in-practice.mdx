@@ -1,0 +1,119 @@
+---
+title: 'React Compiler 生产笔记：自动 memo 的边界与收益'
+description: 'Next 16 启用 React Compiler 后，何时还能手写 useMemo、哪些反模式会被编译器拒绝，以及如何用实站测量收益。'
+date: '2026-07-21'
+tags: ['React', 'Next.js', '性能优化']
+published: true
+featured: false
+license: 'CC-BY-4.0'
+---
+
+> 结论先说：Compiler 负责**默认路径上的 memo 纪律**，不是魔法。交互密集、依赖不稳定、或依赖 ref 副作用的代码，仍要你自己守边界；收益用 INP/重渲染次数说话，不要用「删了多少 useMemo」自我安慰。
+
+本站在 Next 16.2 打开了 `reactCompiler: true`，并安装 `babel-plugin-react-compiler@1.0.0`。App Router 默认服务端组件的拆分策略见 [[nextjs-app-router|Next.js App Router 实战]]；最终可感指标仍按 [[web-performance-optimization|Web 性能优化实战]] 的 LCP/INP/CLS 优先序。
+
+## 它实际编译了什么
+
+Compiler 在构建期分析组件与 hooks，自动插入等价于 `memo` / `useMemo` / `useCallback` 的缓存。你写：
+
+```tsx
+function TagCloud({ tags }: { tags: string[] }) {
+  const sorted = [...tags].sort((a, b) => a.localeCompare(b, 'zh-CN'));
+  return (
+    <ul>
+      {sorted.map((t) => (
+        <li key={t}>{t}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+编译后大致会把 `sorted` 的计算结果缓存到「`tags` 引用不变」的条件下。父组件重渲染但 `tags` 同一引用时，排序不会重复跑。
+
+这不是运行时 AI，是**静态分析 + 插入缓存**。分析失败时会 bail out，行为退回普通 React。
+
+## 与手写 memo 的分工
+
+| 场景 | 建议 |
+| --- | --- |
+| 纯展示、依赖清晰的 props | 交给 Compiler |
+| 昂贵计算但依赖是每次新建的对象字面量 | 先稳定依赖，再谈 memo |
+| 事件处理器要传给深层 memo 子树 | Compiler 通常能处理；不要为「风格」手写 useCallback |
+| 依赖 `ref.current` 做派生状态 | 不要指望 Compiler；重构成 state 或显式同步 |
+| 第三方组件要求稳定回调 identity | 测一次；不稳再局部 `useCallback` |
+
+类型体操与泛型约束仍按 [[typescript-advanced-types|TypeScript 高级类型实战]] 的纪律写——Compiler **不替代**类型系统。
+
+## Next 16 启用清单
+
+```ts
+// next.config.ts
+const nextConfig = {
+  reactCompiler: true, // Next 16 稳定开关，不在 experimental 下
+};
+
+// package.json (devDependency)
+// "babel-plugin-react-compiler": "^1.0.0"
+```
+
+注意：
+
+1. **生产 build 必须绿**。本站 `pnpm build` 在 Compiler 开启后仍生成完整路由表；若某组件触发编译器内部错误，构建会直接失败——这是好事。
+2. **dev 与 build 走同一插件**。本地 `pnpm dev` 若异常，优先用 `pnpm typecheck` + 最小复现组件定位，不要先关 Compiler 掩盖。
+3. **不要同时开冲突的 Babel 自定义链**。若项目另有 `babel.config`，确认未覆盖 Next 注入的 Compiler preset。
+
+## 反模式：Compiler 救不了你
+
+### 1. 每次 render 新建依赖
+
+```tsx
+// 差：filters 每次都是新对象 → 下游无论是否 memo 都会失效
+<SearchBar filters={{ tag, q }} />
+
+// 好：稳定引用或原始值
+<SearchBar tag={tag} q={q} />
+```
+
+### 2. 在 render 里产生副作用
+
+```tsx
+// 差：Compiler 不会把这变成安全代码
+if (items.length > 100) analytics.track('large-list');
+```
+
+副作用仍只属于 `useEffect` / 事件 / Server Actions。
+
+### 3. 把「删除全部 useMemo」当 KPI
+
+手写 memo 里**语义型**的缓存（例如按 slug 建 `Map` 邻接表）可以保留——它表达领域结构，不是「怕重渲染」的补丁。本站花园图的 `neighborsOf` 就是这类结构：就算 Compiler 能缓存，显式 `useMemo` 也更可读。
+
+## 如何证明有收益
+
+1. **React Profiler**：同一交互路径下，提交时长与重渲染组件数是否下降。
+2. **INP**：交互热点（搜索输入、花园拖拽、主题切换）在真机上的 p75。
+3. **包体**：Compiler 可能略增编译产物；用既有 bundle budget 门禁看是否越线。
+4. **对比分支**：同一 commit 开关 `reactCompiler`，固定数据集，禁止「感觉更快」。
+
+没有 RUM 时，至少保留本地 Profiler 截图与 Lighthouse 实验室数据，并标明环境——这与 [[web-performance-optimization|性能优化]] 文中「禁止假 p75」一致。
+
+## 与数字花园 / 客户端岛的关系
+
+花园力导向、wikilink popover 都是 `"use client"` 岛。Compiler 对这类交互树最有价值：hover 状态变化不应拖着整棵筛选面板重算。布局算法本身是纯函数（见 [[digital-garden-force-layout|数字花园：力导向与 wikilink]]），放在 `useMemo` 或模块级缓存都合理；Compiler 负责「忘写 memo 也不至于每次 hover 全量重排」。
+
+## 检查清单
+
+- [ ] `reactCompiler: true` 在 Next 16+ 顶层配置，不在已废弃位置
+- [ ] `babel-plugin-react-compiler` 锁定到已知可用的大版本
+- [ ] `pnpm build` 全绿
+- [ ] 关键交互路径 Profiler 前后对比
+- [ ] 语义型 memo / 邻接表未为了「干净」被误删
+- [ ] 未用 Compiler 当借口跳过稳定 props 设计
+
+## 延伸阅读
+
+- [[nextjs-app-router|Next.js App Router 实战]]
+- [[web-performance-optimization|Web 性能优化实战]]
+- [[typescript-advanced-types|TypeScript 高级类型实战]]
+- [[nextjs-view-transitions|Next.js View Transitions 实战]]
+- [[digital-garden-force-layout|数字花园：力导向与 wikilink]]
