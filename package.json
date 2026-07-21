@@ -2,6 +2,16 @@
   "name": "blog",
   "version": "0.1.0",
   "private": true,
+  "description": "Chronicle (GitHub) — personal blog & portfolio (Next.js). Local package name remains blog.",
+  "license": "MIT",
+  "homepage": "https://blog-aijiai520.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xvyimu/Chronicle.git"
+  },
+  "bugs": {
+    "url": "https://github.com/xvyimu/Chronicle/issues"
+  },
   "engines": {
     "node": "22.x"
   },
