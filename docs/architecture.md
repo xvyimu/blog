@@ -307,7 +307,7 @@ push master
 
 | 层         | 基线                                                         |
 | ---------- | ------------------------------------------------------------ |
-| Vitest     | 672 tests / 90 files                                         |
+| Vitest     | 685 tests / 93 files                                         |
 | Playwright | 48 tests / 5 spec files                                      |
 | Build      | production build succeeds; document routes remain dynamic    |
 | CI         | quality / bundle-analyze / e2e（含 Lighthouse）/ deploy 全绿 |

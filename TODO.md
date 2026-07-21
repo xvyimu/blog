@@ -1,10 +1,10 @@
 # 西江月博客 · 当前待办
 
-> 状态：**工程侧可无条件推进的事项已关闭**；仅剩外部账号或条件触发。数字花园 G0/G1 已合入；G2 为次级 `/garden`（筛选 + 力导向 + 文内邻接，非首页）。  
-> 更新：2026-07-21（花园 G0–G2 增强 + v2 体验包）  
+> 状态：**工程侧可无条件推进的事项已关闭**；仅剩外部账号或条件触发。数字花园 G0–G3 已合入 `feat/v3-ship`（未 push）。  
+> 更新：2026-07-21（v3 ship + G3/G2 测试补全 · 685/93）  
 > 生产：`https://incca.ccwu.cc`  
-> 归档 HEAD：`ef77986`  
-> 功能基线：`ef77986`（G2 数字花园上线）· 运营工程：`96e0214` · 硬阻塞记录：`fa3e579`  
+> 归档 HEAD：`ef77986`（origin/master）  
+> 功能基线：`feat/v3-ship`（G3 popover + G2 hover + React Compiler + VT）· 运营工程：`96e0214` · 硬阻塞记录：`fa3e579`  
 > 手册：[ops-deferred-work-plan.md](./docs/ops-deferred-work-plan.md)  
 > 自动检查：`pnpm check:ops-readiness`（可选 `-- --live`）  
 > run 归档：
@@ -38,7 +38,11 @@
 - [x] G2 次级原型 `/garden`（边列表 + 力导向 + 专题/标签筛选；`prefers-reduced-motion` 降级列表）
 - [x] 文章页折叠邻接（`ArticleNeighbors` 出/入边）
 - [x] G2 再增强：节点拖拽 + 本机保存/恢复视图（localStorage）
+- [x] G2 hover 邻居高亮（`hoverSlug` + `neighborsOf` dim）+ 测试
+- [x] G3 wikilink popover（`/api/preview/[slug]` + `WikilinkPopover`）+ 测试
 - [ ] G2 可选：更多布局算法 / 导出 PNG
+- [ ] Q28 正文概念链加深 4–8 篇 MDX（需用户授权改 content/）
+- [ ] Q29 SRI preview 验证（需 Vercel preview deploy 授权）
 
 ## 已完成索引（本阶段）
 
@@ -48,6 +52,8 @@
 | 延后运营工程化 | 就绪门禁 + 手册 + live 实测   | run `deferred-ops-readiness` · `96e0214`      |
 | 生产质量       | CI/e2e/deploy/smoke 绿        | launch-baseline                               |
 | 阶段归档       | TODO/记忆/run 索引收口        | `ef77986`                                     |
+| v3 ship 工程   | Compiler + FS cache + VT + G3 | `feat/v3-ship` · `pnpm build` 94/94 绿        |
+| v3 测试补全    | G3/G2 + preview route 13 测   | 685 tests / 93 files                          |
 | 数字花园 G0/G1 | wikilink + 反链面板           | 本仓 `src/lib/posts/wikilink*` · `link-graph` |
 
 更早 P0–P10 见历史报告与 `docs/superpowers/runs/`，不在此重复。
