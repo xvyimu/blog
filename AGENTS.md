@@ -2,9 +2,21 @@
 
 > This file helps AI coding assistants understand the project structure and conventions.
 
+## Identity
+
+| 项                  | 值                                                                                                       |
+| ------------------- | -------------------------------------------------------------------------------------------------------- |
+| GitHub              | [xvyimu/Chronicle](https://github.com/xvyimu/Chronicle)（由 `blog` 改名）                                |
+| 产品显示名          | 西江月博客                                                                                               |
+| 本地路径 / npm name | 真路径 `D:\Chronicle` · junction `D:\blog` · package `"name": "blog"`（private；**不是** GitHub 仓库名） |
+| 生产                | https://incca.ccwu.cc                                                                                    |
+| License             | MIT · `LICENSE` · Copyright 2026 雨天狂奔                                                                |
+| Giscus 默认 repo    | `xvyimu/Chronicle`（`src/lib/site.ts`；可用 env 覆盖）                                                   |
+| 作品集 GitHub 链接  | `data/projects.json`（Chronicle / ChronoPortal / ChronoRelay …）                                         |
+
 ## Project Overview
 
-A personal blog built with Next.js 16.2 (App Router), React 19, and Tailwind CSS 4. Content is authored in MDX, stored in `content/blog/`. Projects data is in `data/projects.json`.
+A personal blog built with Next.js 16.2 (App Router), React 19, and Tailwind CSS 4. Content is authored in MDX, stored in `content/blog/`. Projects data is in `data/projects.json`. Production reads `generated/content-snapshot/` by default (`CONTENT_BACKEND=snapshot`); after editing MDX run `pnpm content:build` and commit the snapshot.
 
 ## Skill Routing
 

@@ -1,6 +1,16 @@
 # 西江月博客 · Agent 接手指南
 
-> 状态：当前维护版（2026-07-18）。详细模块说明见 [architecture.md](./architecture.md)，当前未完成事项只以根 [TODO](../TODO.md) 为准。
+> 状态：当前维护版（2026-07-21 增补仓库身份）。详细模块说明见 [architecture.md](./architecture.md)，当前未完成事项只以根 [TODO](../TODO.md) 为准。
+
+## 0. 仓库身份
+
+| 项      | 值                                                                                          |
+| ------- | ------------------------------------------------------------------------------------------- |
+| GitHub  | **[xvyimu/Chronicle](https://github.com/xvyimu/Chronicle)**（旧名 `blog`，GitHub 会重定向） |
+| 产品名  | 西江月博客                                                                                  |
+| 本地    | 真路径 `D:\Chronicle` · junction `D:\blog` · package name `blog`（private）                 |
+| 生产    | https://incca.ccwu.cc                                                                       |
+| LICENSE | MIT · Copyright 2026 雨天狂奔                                                               |
 
 ## 1. 接手顺序
 

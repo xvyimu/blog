@@ -149,6 +149,16 @@ pnpm content:build
 
 - data/projects.json
 
+GitHub 仓库身份（2026-07-21 改名后）：
+
+| 作品 id         | GitHub                                 |
+| --------------- | -------------------------------------- |
+| `chronicle`     | https://github.com/xvyimu/Chronicle    |
+| `chrono-portal` | https://github.com/xvyimu/ChronoPortal |
+| `chrono-relay`  | https://github.com/xvyimu/ChronoRelay  |
+
+`id` 变化会改变 `/projects/[id]` 路由；封面图路径（`/images/projects/*.png`）可保持文件名不变。
+
 根据 src/lib/projects.ts 当前校验逻辑，可用字段包括：
 
 | 字段        | 类型     | 是否必填 | 说明              |

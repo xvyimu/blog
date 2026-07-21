@@ -85,7 +85,7 @@ test.describe('mobile critical flows', () => {
   });
 
   test('applies the project title responsive size at runtime', async ({ page }) => {
-    await page.goto('/projects/nav-site', { waitUntil: 'domcontentloaded' });
+    await page.goto('/projects/chrono-portal', { waitUntil: 'domcontentloaded' });
 
     const title = page.locator('.project-detail__title');
     await expect(title).toBeVisible({ timeout: 10000 });

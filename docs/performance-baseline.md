@@ -23,7 +23,7 @@ Track synthetic Lighthouse data and real-user Vercel Speed Insights data for:
 
 ## Current CI Budgets
 
-These budgets are enforced in CI today. Latest verified run: [29573545749](https://github.com/xvyimu/blog/actions/runs/29573545749), success on 2026-07-17.
+These budgets are enforced in CI today. Latest verified run: [29573545749](https://github.com/xvyimu/Chronicle/actions/runs/29573545749), success on 2026-07-17.
 
 | Gate                       | Current threshold | Enforced in                                                                  |
 | -------------------------- | ----------------- | ---------------------------------------------------------------------------- |
