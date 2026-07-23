@@ -39,7 +39,7 @@ A personal blog built with Next.js 16.2 (App Router), React 19, and Tailwind CSS
 - **Content**: MDX with custom frontmatter parser (`lib/parse-frontmatter.ts`, js-yaml 4.x), next-mdx-remote
 - **Syntax Highlighting**: Shiki via rehype-pretty-code
 - **Search**: fuse.js via production `GET /api/search` (server Fuse + projected DTO); tests may embed client Fuse
-- **Testing**: Vitest (unit/integration, 708 tests, 95 files), Playwright (E2E, 49+ tests, 5 spec files)
+- **Testing**: Vitest (unit/integration, 716 tests, 95 files), Playwright (E2E, 49+ tests, 5 spec files)
 - **CI**: GitHub Actions (lint / test / tsc / build / bundle-budget / e2e)
 - **Deployment**: Vercel
 
@@ -140,7 +140,7 @@ src/
 ```bash
 pnpm dev          # Start dev server (port 3000; Turbopack)
 pnpm build        # Generate RSS + production build; document routes are dynamic due CSP nonce
-pnpm test         # Run unit/integration tests (708 tests, 95 files; 2026-07-22 baseline)
+pnpm test         # Run unit/integration tests (716 tests, 95 files; 2026-07-24 baseline)
 pnpm test:e2e     # Run E2E tests (49+ tests, 5 spec files; auto-starts server on port 3001)
 pnpm test:e2e:raw # Playwright raw (pass-through flags, e.g. --ui)
 pnpm lint         # ESLint

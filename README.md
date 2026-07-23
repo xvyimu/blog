@@ -61,7 +61,7 @@ NEXT_PUBLIC_GISCUS_CATEGORY_ID=your_category_id
 | `pnpm content:build`            | 重建 `generated/content-snapshot/`（改 MDX 后必跑并提交） |
 | `pnpm build`                    | RSS + content snapshot + 生产构建                         |
 | `pnpm start`                    | 启动生产服务器                                            |
-| `pnpm test`                     | Vitest 单元/集成（当前基线 708 / 95）                     |
+| `pnpm test`                     | Vitest 单元/集成（当前基线 716 / 95）                     |
 | `pnpm test:e2e`                 | Playwright E2E                                            |
 | `pnpm typecheck`                | `tsc --noEmit`                                            |
 | `pnpm check:seo`                | 内容 / sitemap / SEO 完整性                               |

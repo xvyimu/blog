@@ -1,27 +1,28 @@
 # CH-DEPS-SEC · 依赖安全分类与门闩 · 2026-07-24
 
 > Worktree: `ch-deps-sec` · Branch: `xvyimu/ch-deps-sec` · **local only（未 push）**  
+> 钉 commit：本文件证据链 HEAD **`19f486d`**（`docs(ops): CH-DEPS-SEC scan classification 2026-07-24`；后续卫生 commit 见文末 Git）  
 > Base: `origin/master` @ **`fbcf270`**（`docs(ops): CH-DAY hardening evidence 2026-07-24`）
 
 ## 环境
 
-| Item              | Value                                                                  |
-| ----------------- | ---------------------------------------------------------------------- |
-| Worktree path     | `C:\Users\yuanjia\orca\workspaces\Chronicle\ch-deps-sec`               |
-| Base tip at start | `fbcf270`                                                              |
-| Tip at finish     | 见文末 Git（本波仅证据 md；无依赖升级 commit）                         |
-| Node              | v24.16.0（engines 声明 22.x；仅 engine warn）                          |
-| pnpm              | 11.8.0                                                                 |
-| Install           | `pnpm install --frozen-lockfile` → **exit 0**                          |
-| next / SRI        | `next@16.2.11` · `eslint-config-next@16.2.11` · `ENABLE_SRI` gate 仍在 |
+| Item              | Value                                                                   |
+| ----------------- | ----------------------------------------------------------------------- |
+| Worktree path     | `C:\Users\yuanjia\orca\workspaces\Chronicle\ch-deps-sec`                |
+| Base tip at start | `fbcf270`                                                               |
+| Tip at finish     | 见文末 Git（扫描证据钉 `19f486d`；可叠加 docs 卫生 commit；无依赖升级） |
+| Node              | v24.16.0（engines 声明 22.x；仅 engine warn）                           |
+| pnpm              | 11.8.0                                                                  |
+| Install           | `pnpm install --frozen-lockfile` → **exit 0**                           |
+| next / SRI        | `next@16.2.11` · `eslint-config-next@16.2.11` · `ENABLE_SRI` gate 仍在  |
 
 ## P0 继承
 
 | Check               | Result                                                                                                   |
 | ------------------- | -------------------------------------------------------------------------------------------------------- |
 | Base / HEAD         | `fbcf270`（含 WAVE-1 next 16.2.11 + CH-DAY 硬化证据）                                                    |
-| WAVE-1 证据         | `docs/ops/ch-w1-sri-2026-07-23.md` 可读                                                                  |
-| CH-DAY 证据         | `docs/ops/ch-day-hardening-2026-07-24.md` 可读                                                           |
+| WAVE-1 证据         | [ch-w1-sri-2026-07-23.md](./ch-w1-sri-2026-07-23.md) 可读                                                |
+| CH-DAY 证据         | [ch-day-hardening-2026-07-24.md](./ch-day-hardening-2026-07-24.md) 可读                                  |
 | `package.json`      | `next`/`eslint-config-next`/`@next/bundle-analyzer` = 16.2.11；`js-yaml` 钉 `4.3.0`；`@types/node` `^20` |
 | CSP / SRI 生产 flip | 未触碰；未放宽 CSP；`ENABLE_SRI` 仍为 owner gate                                                         |
 
@@ -37,6 +38,8 @@
 | 4   | `gh api …/dependabot/alerts` open                                     | **0** | open count = **0**                                                                                     |
 | 5   | Dependabot 全量历史                                                   | —     | 18 条（去重 ~9 GHSA）全部 **`state=fixed`** @ 2026-07-23；package 全是 `next`，`first_patched=16.2.11` |
 | 6   | `pnpm outdated`                                                       | **1** | 有落后包（预期）；无 audit 命中                                                                        |
+
+**「audit 0」边界：** 本文的 **0** = `pnpm audit` 在 high+（及本波全级别复核）无 known advisory，且 GitHub Dependabot **open** = 0。**不等于** 零安全债：仍有 major 落后包、卫生债 patch/minor、以及未扫到的供应链/配置面风险；只表示当前扫描门闩通过。
 
 **Registry 备注：** 默认镜像（npmmirror）历史已知无 audit bulk endpoint；本波 audit 一律 `registry.npmjs.org`。
 
@@ -84,14 +87,14 @@
 
 ### 2.3 major-later（只列债 · 不硬升）
 
-| Package                     | Current      | Latest / Target | Why deferred                                                   |
-| --------------------------- | ------------ | --------------- | -------------------------------------------------------------- |
-| **`js-yaml`**               | **4.3.0**    | **5.2.1**       | 题单硬约束：major 只列不硬升；直接依赖钉 4.3.0                 |
-| **`@types/node`**           | **20.19.43** | **26.1.1**      | 题单硬约束；engines 仍 22.x 线；types major 可能动 Node API 面 |
-| `@testing-library/jest-dom` | 6.10.0       | 7.0.0           | 测试工具 major                                                 |
-| `eslint`                    | 9.39.4       | 10.7.0          | ESLint 10 破坏面大                                             |
-| `feed`                      | 5.2.1        | 6.0.0           | RSS 生成 major                                                 |
-| `typescript`                | 5.9.3        | 7.0.2           | TS major 不在本波                                              |
+| Package                     | Current      | Latest / Target | Why deferred                                                                 |
+| --------------------------- | ------------ | --------------- | ---------------------------------------------------------------------------- |
+| **`js-yaml`**               | **4.3.0**    | **5.2.1**       | 本波约束：major 只列不升；直接依赖钉 4.3.0                                   |
+| **`@types/node`**           | **20.19.43** | **26.1.1**      | 本波约束：major 只列不升；engines 仍 22.x 线；types major 可能动 Node API 面 |
+| `@testing-library/jest-dom` | 6.10.0       | 7.0.0           | 测试工具 major                                                               |
+| `eslint`                    | 9.39.4       | 10.7.0          | ESLint 10 破坏面大                                                           |
+| `feed`                      | 5.2.1        | 6.0.0           | RSS 生成 major                                                               |
+| `typescript`                | 5.9.3        | 7.0.2           | TS major 不在本波                                                            |
 
 #### major 债细节 · `js-yaml@5`
 
@@ -128,25 +131,25 @@
 
 ## P4 收工
 
-| Item         | Value                                          |
-| ------------ | ---------------------------------------------- |
-| 证据文件     | `docs/ops/ch-deps-sec-2026-07-24.md`（本文件） |
-| Local commit | 仅证据 md（见下 Git）                          |
-| `git push`   | **未执行**（红线）                             |
-| CSP          | 未放宽                                         |
-| 密钥         | 未写入 git                                     |
-| 依赖变更     | **无**（package.json / lockfile 未改）         |
+| Item         | Value                                                              |
+| ------------ | ------------------------------------------------------------------ |
+| 证据文件     | [ch-deps-sec-2026-07-24.md](./ch-deps-sec-2026-07-24.md)（本文件） |
+| Local commit | 扫描证据钉 `19f486d` + 可选 docs 卫生（见下 Git）                  |
+| `git push`   | **未执行**（红线）                                                 |
+| CSP          | 未放宽                                                             |
+| 密钥         | 未写入 git                                                         |
+| 依赖变更     | **无**（package.json / lockfile 未改）                             |
 
 ## 总评
 
-| 维度         | 结果                                                             |
-| ------------ | ---------------------------------------------------------------- |
-| P0 继承      | next 16.2.11 + SRI/CH-DAY 证据完整                               |
-| scan-first   | audit high/all **0**；Dependabot open **0**（18 历史条全 fixed） |
-| security-now | **无待修**                                                       |
-| major 债     | `js-yaml@5` · `@types/node@26` 等 **只列不硬升**                 |
-| 门闩         | typecheck / test:sri / check:seo / test **全绿**                 |
-| 推送         | **未 push**                                                      |
+| 维度         | 结果                                                                                  |
+| ------------ | ------------------------------------------------------------------------------------- |
+| P0 继承      | next 16.2.11 + SRI/CH-DAY 证据完整                                                    |
+| scan-first   | audit high/all **0**；Dependabot open **0**（18 历史条全 fixed；边界见上「audit 0」） |
+| security-now | **无待修**                                                                            |
+| major 债     | `js-yaml@5` · `@types/node@26` 等 **只列不升**（本波不硬升 major）                    |
+| 门闩         | typecheck / test:sri / check:seo / test **全绿**                                      |
+| 推送         | **未 push**                                                                           |
 
 **总评：绿 · 可 review（local only）· 无依赖 diff**
 
@@ -166,6 +169,7 @@ pnpm test
 
 ## Git
 
-- local commit：本证据 md
+- 扫描证据 commit：`19f486d`（`docs(ops): CH-DEPS-SEC scan classification 2026-07-24`）
+- 可叠加：docs 卫生 commit（页眉 / 链接 / 基线；见该 commit message）
 - **未** `git push`
 - **未** 改 `package.json` / lockfile

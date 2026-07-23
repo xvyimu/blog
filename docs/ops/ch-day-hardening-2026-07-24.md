@@ -1,15 +1,16 @@
 # CH-DAY 硬化证据 · 2026-07-24
 
-> Worktree: `ch-day-hardening` · Branch: `xvyimu/ch-day-hardening` · **local only（未 push）**  
+> Worktree 当时：`ch-day-hardening` · Branch：`xvyimu/ch-day-hardening`  
+> **状态：已合 master / tip `fbcf270`**（`docs(ops): CH-DAY hardening evidence 2026-07-24`；`origin/master` 对齐）  
 > Base: WAVE-1 SRI tip `7cc4b18`（`xvyimu/ch-w1-sri` 同 tip）
 
 ## 环境
 
 | Item                    | Value                                                                  |
 | ----------------------- | ---------------------------------------------------------------------- |
-| Worktree path           | `C:\Users\yuanjia\orca\workspaces\Chronicle\ch-day-hardening`          |
+| Worktree path（当时）   | `C:\Users\yuanjia\orca\workspaces\Chronicle\ch-day-hardening`          |
 | Base tip at start       | `7cc4b18` (`fix(deps): bump next to 16.2.11 for high audit CVEs`)      |
-| Tip at finish           | `7cc4b18`（无新代码 commit；证据文档本文件）                           |
+| Tip at finish / master  | **`fbcf270`**（本证据 md 合入；代码门闩仍基于 `7cc4b18` 内容树）       |
 | Node                    | v24.16.0（engines 声明 22.x；仅 engine warn，门闩可跑）                |
 | pnpm                    | 11.8.0                                                                 |
 | Package manager install | `pnpm install --frozen-lockfile` → **exit 0**                          |
@@ -21,7 +22,7 @@
 | ---------------------- | -------------------------------------------------------------------------------------------------------- |
 | `git log -8 --oneline` | tip = `7cc4b18`；含 WAVE-1 next bump + 既有 docs/UI commits                                              |
 | `git status`           | clean at start；本波仅新增本证据 md                                                                      |
-| WAVE-1 证据            | `docs/ops/ch-w1-sri-2026-07-23.md` 可读；SRI 脚本/配置仍在                                               |
+| WAVE-1 证据            | [ch-w1-sri-2026-07-23.md](./ch-w1-sri-2026-07-23.md) 可读；SRI 脚本/配置仍在                             |
 | `next.config.ts`       | `ENABLE_SRI === '1'` → `experimental.sri.algorithm = sha384`；生产 flip 仍 owner gate                    |
 | `package.json`         | `next`/`eslint-config-next`/`@next/bundle-analyzer` = 16.2.11；`js-yaml` 钉 `4.3.0`；`@types/node` `^20` |
 
@@ -75,28 +76,29 @@
 - high: `GHSA-6gpp-xcg3-4w24` · `GHSA-m99w-x7hq-7vfj` · `GHSA-89xv-2m56-2m9x` · `GHSA-p9j2-gv94-2wf4`
 - medium: `GHSA-68g3-v927-f742` · `GHSA-4633-3j49-mh5q` · `GHSA-4c39-4ccg-62r3` · `GHSA-q8wf-6r8g-63ch` · `GHSA-955p-x3mx-jcvp`
 
-**处置：** 代码侧已 patched；GitHub 上 alert 仍 open 是因为 **未 push / 未合 master**（红线：本波禁止 push）。合入 master 后应自动 dismiss。
+**处置（写证据当时）：** 代码侧已 patched；当时 GitHub alert 仍 open，因分支尚未合 master。  
+**现状（诚实页眉）：** 本证据已合 **master @ `fbcf270`**；后续 CH-DEPS-SEC 扫描见 [ch-deps-sec-2026-07-24.md](./ch-deps-sec-2026-07-24.md)（Dependabot open = 0，历史条均 fixed）。
 
 ### 2.3 分类表（`pnpm outdated` 快照 · exit 1 = 有落后包，预期）
 
-| Package                                           | Current      | Latest         | Bucket                  | Reason / action                             |
-| ------------------------------------------------- | ------------ | -------------- | ----------------------- | ------------------------------------------- |
-| next / eslint-config-next / @next/bundle-analyzer | 16.2.11      | （已 patched） | **security-now → done** | WAVE-1 已升；本波 audit 0 high              |
-| @tailwindcss/postcss                              | 4.3.1        | 4.3.3          | ignore-with-reason      | patch/minor 卫生债；无 advisory；本波不扫荡 |
-| vitest / @vitest/ui                               | 4.1.9        | 4.1.10         | ignore-with-reason      | patch；716 测已绿，无安全驱动               |
-| prettier                                          | 3.9.3        | 3.9.6          | ignore-with-reason      | 格式工具；非 runtime                        |
-| radix-ui                                          | 1.6.1        | 1.6.4          | ignore-with-reason      | minor；无 audit 命中                        |
-| fuse.js                                           | 7.4.2        | 7.5.0          | ignore-with-reason      | minor 搜索库；无 audit                      |
-| lint-staged                                       | 17.0.8       | 17.1.1         | ignore-with-reason      | git hook 工具链                             |
-| shiki                                             | 4.2.0        | 4.3.1          | ignore-with-reason      | 高亮；无 audit                              |
-| tsx                                               | 4.22.4       | 4.23.1         | ignore-with-reason      | 脚本 runner                                 |
-| rehype-pretty-code                                | 0.14.3       | 0.14.4         | ignore-with-reason      | patch                                       |
-| **js-yaml**                                       | **4.3.0**    | **5.2.1**      | **major-later**         | 题单硬约束：major 只列债不硬升              |
-| **@types/node**                                   | **20.19.43** | **26.x**       | **major-later**         | 题单硬约束；engines 仍 22.x 线              |
-| @testing-library/jest-dom                         | 6.10.0       | 7.0.0          | major-later             | 测试工具 major                              |
-| eslint                                            | 9.39.4       | 10.x           | major-later             | ESLint 10 破坏面大                          |
-| feed                                              | 5.2.1        | 6.0.0          | major-later             | RSS 生成 major                              |
-| typescript                                        | 5.9.3        | 7.x            | major-later             | TS major 不在本波                           |
+| Package                                           | Current      | Latest         | Bucket                  | Reason / action                              |
+| ------------------------------------------------- | ------------ | -------------- | ----------------------- | -------------------------------------------- |
+| next / eslint-config-next / @next/bundle-analyzer | 16.2.11      | （已 patched） | **security-now → done** | WAVE-1 已升；本波 audit 0 high               |
+| @tailwindcss/postcss                              | 4.3.1        | 4.3.3          | ignore-with-reason      | patch/minor 卫生债；无 advisory；本波不扫荡  |
+| vitest / @vitest/ui                               | 4.1.9        | 4.1.10         | ignore-with-reason      | patch；716 测已绿，无安全驱动                |
+| prettier                                          | 3.9.3        | 3.9.6          | ignore-with-reason      | 格式工具；非 runtime                         |
+| radix-ui                                          | 1.6.1        | 1.6.4          | ignore-with-reason      | minor；无 audit 命中                         |
+| fuse.js                                           | 7.4.2        | 7.5.0          | ignore-with-reason      | minor 搜索库；无 audit                       |
+| lint-staged                                       | 17.0.8       | 17.1.1         | ignore-with-reason      | git hook 工具链                              |
+| shiki                                             | 4.2.0        | 4.3.1          | ignore-with-reason      | 高亮；无 audit                               |
+| tsx                                               | 4.22.4       | 4.23.1         | ignore-with-reason      | 脚本 runner                                  |
+| rehype-pretty-code                                | 0.14.3       | 0.14.4         | ignore-with-reason      | patch                                        |
+| **js-yaml**                                       | **4.3.0**    | **5.2.1**      | **major-later**         | 本波约束：major 只列不升                     |
+| **@types/node**                                   | **20.19.43** | **26.x**       | **major-later**         | 本波约束：major 只列不升；engines 仍 22.x 线 |
+| @testing-library/jest-dom                         | 6.10.0       | 7.0.0          | major-later             | 测试工具 major                               |
+| eslint                                            | 9.39.4       | 10.x           | major-later             | ESLint 10 破坏面大                           |
+| feed                                              | 5.2.1        | 6.0.0          | major-later             | RSS 生成 major                               |
+| typescript                                        | 5.9.3        | 7.x            | major-later             | TS major 不在本波                            |
 
 **本波升级动作：** **无**（security-now 已由 WAVE-1 覆盖；无额外明确可修的 patch/minor **安全**项）。
 
@@ -112,14 +114,13 @@
 
 ## P4 收工
 
-| Item          | Value                                               |
-| ------------- | --------------------------------------------------- |
-| 证据文件      | `docs/ops/ch-day-hardening-2026-07-24.md`（本文件） |
-| Local commits | 可选：仅证据 md（见下 Git）                         |
-| `git push`    | **未执行**（红线）                                  |
-| CSP           | 未放宽                                              |
-| 密钥          | 未写入 git                                          |
-| 其它产品      | 未触碰                                              |
+| Item       | Value                                                                        |
+| ---------- | ---------------------------------------------------------------------------- |
+| 证据文件   | [ch-day-hardening-2026-07-24.md](./ch-day-hardening-2026-07-24.md)（本文件） |
+| Master tip | **`fbcf270`**（已合 master / 与 `origin/master` 对齐）                       |
+| CSP        | 未放宽                                                                       |
+| 密钥       | 未写入 git                                                                   |
+| 其它产品   | 未触碰                                                                       |
 
 ## 总评
 
@@ -127,11 +128,11 @@
 | ------------------- | --------------------------------------------------------------------------------- |
 | WAVE-1 SRI 继承     | 完整 · tip 对齐                                                                   |
 | 全门闩              | **绿**（audit high / test / typecheck / seo / docs / sri / build / prod-content） |
-| 供应链 security-now | 无待修；Dependabot next 线已 patched，合 master 后清 alert                        |
-| major 债            | js-yaml@5 · @types/node@26 · eslint@10 · feed@6 · TS@7 等 **只列不硬升**          |
-| 推送                | **未 push**                                                                       |
+| 供应链 security-now | 无待修；Dependabot next 线已 patched；master 合入后 alert 清零（见 CH-DEPS-SEC）  |
+| major 债            | js-yaml@5 · @types/node@26 · eslint@10 · feed@6 · TS@7 等 **只列不升**            |
+| 合入状态            | **已合 master / tip `fbcf270`**                                                   |
 
-**总评：绿 · 可 review（local only）**
+**总评：绿 · 已合 master（`fbcf270`）**
 
 ## 复现
 
@@ -154,5 +155,5 @@ pnpm check:production-content -- --base-url=https://incca.ccwu.cc
 
 ## Git
 
-- 可选 local commit：本证据 md
-- **未** `git push`
+- 证据 commit / master tip：`fbcf270`（`docs(ops): CH-DAY hardening evidence 2026-07-24`）
+- **已合 master**；`origin/master` 对齐 `fbcf270`
