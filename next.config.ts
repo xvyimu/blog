@@ -16,7 +16,7 @@ const isDev = process.env.NODE_ENV === 'development';
  * checklist (docs/adr/2026-07-21-sri-over-nonce-evaluation.md). Production enable
  * is a separate, explicitly-authorized change — not a side effect of this flag.
  *
- * Next 16.2.9 type: experimental.sri is `{ algorithm?: 'sha256'|'sha384'|'sha512' }`,
+ * Next 16.2.11 type: experimental.sri is `{ algorithm?: 'sha256'|'sha384'|'sha512' }`,
  * NOT a boolean. Omit the key entirely when disabled so the experiment is inert.
  */
 const sriExperiment =
