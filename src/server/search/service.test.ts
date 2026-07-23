@@ -31,17 +31,19 @@ describe('searchPublishedPosts', () => {
     vi.mocked(getAllPosts).mockReturnValue(MOCK_POSTS);
   });
 
-  it('reads posts from content facade and returns public projected hits', () => {
+  it('loads corpus (fs backend → content facade) and returns public projected hits', () => {
     const hits = searchPublishedPosts('Redis', 5);
 
+    // test env uses CONTENT_BACKEND/fs path → getAllPosts
     expect(getAllPosts).toHaveBeenCalledTimes(1);
     expect(hits.length).toBeGreaterThan(0);
     expect(hits[0].item.slug).toBe('redis-caching-strategies');
     expect((hits[0].item as Record<string, unknown>).searchText).toBeUndefined();
     expect((hits[0].item as Record<string, unknown>).headings).toBeUndefined();
+    expect((hits[0].item as Record<string, unknown>).featured).toBeUndefined();
   });
 
-  it('propagates content facade failures to the caller', () => {
+  it('propagates corpus/content failures to the caller', () => {
     vi.mocked(getAllPosts).mockImplementation(() => {
       throw new Error('D:\\private\\content\\broken.mdx');
     });

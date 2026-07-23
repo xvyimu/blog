@@ -68,6 +68,26 @@ describe('searchPosts', () => {
     );
   });
 
+  it('omits redundant match.value for title and keeps description/excerpt value for UI', () => {
+    const hits = searchPosts(MOCK_POSTS, 'Redis');
+    expect(hits.length).toBeGreaterThan(0);
+    const titleMatch = hits[0].matches.find((m) => m.key === 'title');
+    expect(titleMatch).toBeDefined();
+    expect(titleMatch?.value).toBeUndefined();
+    expect(titleMatch?.indices.length).toBeGreaterThan(0);
+
+    const bodyMatches = hits[0].matches.filter(
+      (m) => m.key === 'description' || m.key === 'excerpt',
+    );
+    for (const match of bodyMatches) {
+      expect(match.value).toBeTruthy();
+    }
+
+    if (typeof hits[0].score === 'number') {
+      expect(String(hits[0].score)).toMatch(/^\d+(\.\d{1,6})?$/);
+    }
+  });
+
   it('respects limit', () => {
     const hits = searchPosts(MOCK_POSTS, 'a', 1);
     expect(hits.length).toBeLessThanOrEqual(1);
@@ -87,7 +107,7 @@ describe('searchPostsCached', () => {
 });
 
 describe('toSearchResultItem', () => {
-  it('keeps display fields only', () => {
+  it('keeps display fields only and omits empty optionals / featured:false', () => {
     const card = toSearchResultItem(MOCK_POSTS[0]);
     expect(card).toEqual({
       slug: 'nextjs-app-router',
@@ -95,11 +115,15 @@ describe('toSearchResultItem', () => {
       description: 'Frontmatter summary for App Router',
       date: '2026-06-23',
       tags: ['Next.js', 'React'],
-      category: undefined,
-      series: undefined,
       featured: true,
       excerpt: 'A comprehensive guide to App Router',
     });
+    expect('category' in card).toBe(false);
+    expect('series' in card).toBe(false);
+
+    const plain = toSearchResultItem(MOCK_POSTS[1]);
+    expect(plain.featured).toBeUndefined();
+    expect('featured' in plain).toBe(false);
   });
 });
 

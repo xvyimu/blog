@@ -4,11 +4,11 @@
 > 运行时：Node.js（内容读取基于 fs，不面向 Edge）。  
 > 规范源补充：`docs/architecture-optimization-research-2026-07-21-v4.md` §7。
 
-| 路径                      | 用途                         | 限流                                           | 成功缓存                   |
-| ------------------------- | ---------------------------- | ---------------------------------------------- | -------------------------- |
-| `GET /api/search`         | 全文/元数据模糊搜索          | 60 次 / 60s / origin key                       | `s-maxage=60, swr=300`     |
-| `GET /api/preview/[slug]` | wikilink 悬停卡片轻量元数据  | 120 次 / 60s / origin key（`preview:` 前缀）   | `s-maxage=3600, swr=86400` |
-| `POST /api/csp-report`    | CSP 违规上报（collect-only） | 30 次 / 60s / origin key（`csp-report:` 前缀） | `no-store`（204，无 body） |
+| 路径                      | 用途                         | 限流                                           | 成功缓存                          |
+| ------------------------- | ---------------------------- | ---------------------------------------------- | --------------------------------- |
+| `GET /api/search`         | 全文/元数据模糊搜索          | 60 次 / 60s / origin key                       | `max-age=0, s-maxage=60, swr=300` |
+| `GET /api/preview/[slug]` | wikilink 悬停卡片轻量元数据  | 120 次 / 60s / origin key（`preview:` 前缀）   | `s-maxage=3600, swr=86400`        |
+| `POST /api/csp-report`    | CSP 违规上报（collect-only） | 30 次 / 60s / origin key（`csp-report:` 前缀） | `no-store`（204，无 body）        |
 
 ---
 
@@ -65,7 +65,7 @@ curl "http://localhost:3000/api/search?q=Next.js&limit=5"
 - `category`、`series`、`featured` 和 `score` 可缺省。
 - `count` 是应用 `limit` 后实际返回的数量，不是未截断总匹配数。
 - 空查询同样返回 `200`，其中 `query=""`、`results=[]`、`count=0`。
-- 成功响应缓存头：`public, s-maxage=60, stale-while-revalidate=300`。
+- 成功响应缓存头：`public, max-age=0, s-maxage=60, stale-while-revalidate=300`（浏览器每次校验；CDN 短缓存）。
 
 ### 错误响应
 
@@ -102,14 +102,15 @@ curl "http://localhost:3000/api/search?q=Next.js&limit=5"
 
 ## 实现位置
 
-| 职责                          | 路径                              |
-| ----------------------------- | --------------------------------- |
-| HTTP 参数/状态码/缓存头映射   | `src/app/api/search/route.ts`     |
-| 搜索用例（读内容 + 缓存引擎） | `src/server/search/service.ts`    |
-| Fuse 引擎与引用缓存           | `src/server/search/engine.ts`     |
-| 进程内限流                    | `src/server/search/rate-limit.ts` |
-| 内容 facade                   | `src/server/content`              |
-| 共享 DTO / 常量 / 纯投影      | `src/lib/search/`                 |
+| 职责                              | 路径                              |
+| --------------------------------- | --------------------------------- |
+| HTTP 参数/状态码/缓存头映射       | `src/app/api/search/route.ts`     |
+| 搜索用例（语料 + 缓存引擎）       | `src/server/search/service.ts`    |
+| 语料（snapshot 只读 search-docs） | `src/server/search/corpus.ts`     |
+| Fuse 引擎与引用缓存               | `src/server/search/engine.ts`     |
+| 进程内限流                        | `src/server/search/rate-limit.ts` |
+| 内容 facade                       | `src/server/content`              |
+| 共享 DTO / 常量 / 纯投影          | `src/lib/search/`                 |
 
 ## 变更检查（search）
 

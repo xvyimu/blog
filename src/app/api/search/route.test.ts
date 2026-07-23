@@ -53,7 +53,10 @@ describe('GET /api/search', () => {
     expect(body.results[0].item.slug).toBe('redis-caching-strategies');
     expect(body.results[0].item.searchText).toBeUndefined();
     expect(body.results[0].item.headings).toBeUndefined();
-    expect(res.headers.get('Cache-Control')).toContain('s-maxage=60');
+    const cacheControl = res.headers.get('Cache-Control') ?? '';
+    expect(cacheControl).toContain('s-maxage=60');
+    expect(cacheControl).toContain('max-age=0');
+    expect(cacheControl).toContain('stale-while-revalidate=300');
     expect(res.headers.get('X-RateLimit-Remaining')).toBeNull();
   });
 

@@ -11,7 +11,10 @@ export type SearchResultItem = {
   excerpt: string;
 };
 
-/** 命中字段的高亮索引；仅保留可展示字段的 match。 */
+/**
+ * 命中字段的高亮索引；仅保留可展示字段的 match。
+ * title/tags/category/series 在服务端投影后可省略 value（用 item 同名字段）。
+ */
 export type SearchMatch = {
   key?: string;
   value?: string;

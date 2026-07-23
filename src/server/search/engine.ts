@@ -11,11 +11,16 @@ import {
 } from '@/lib/search';
 
 function toHits(results: FuseResult<PostMeta>[]): SearchHit[] {
-  return results.map((result) => ({
-    item: toSearchResultItem(result.item),
-    matches: toSearchResultMatches((result.matches ?? []) as SearchMatch[]),
-    score: result.score,
-  }));
+  return results.map((result) => {
+    const item = toSearchResultItem(result.item);
+    const matches = toSearchResultMatches((result.matches ?? []) as SearchMatch[], item);
+    const hit: SearchHit = { item, matches };
+    if (typeof result.score === 'number') {
+      // 固定小数位，避免超长 IEEE 尾数膨胀响应
+      hit.score = Number(result.score.toFixed(6));
+    }
+    return hit;
+  });
 }
 
 /**

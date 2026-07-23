@@ -98,9 +98,15 @@ export async function GET(request: Request) {
   }
 }
 
-/** 成功响应缓存头：短 CDN 缓存降低冷启动；缓存命中不计入进程限流。 */
+/**
+ * 成功响应缓存头。
+ * - max-age=0：浏览器每次向 CDN/源校验，避免本地陈旧结果
+ * - s-maxage=60：边缘短缓存，提高重复查询命中、降低 origin 冷路径
+ * - stale-while-revalidate=300：过期后先吐旧再回源
+ * CDN 命中不进入进程限流 Map。
+ */
 function cacheHeaders(): Record<string, string> {
   return {
-    'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+    'Cache-Control': 'public, max-age=0, s-maxage=60, stale-while-revalidate=300',
   };
 }

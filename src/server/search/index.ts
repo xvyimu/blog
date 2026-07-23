@@ -17,3 +17,4 @@ export {
   type RateLimitResult,
 } from './rate-limit';
 export { searchPublishedPosts } from './service';
+export { getSearchCorpus, resetSearchCorpusForTests } from './corpus';
