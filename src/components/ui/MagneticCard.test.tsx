@@ -1,10 +1,14 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 
-// Mock usePrefersReducedMotion
+// Mock motion preference hooks
 const mockReduced = vi.fn().mockReturnValue(false);
+const mockFine = vi.fn().mockReturnValue(true);
 vi.mock('@/hooks/usePrefersReducedMotion', () => ({
   usePrefersReducedMotion: () => mockReduced(),
+}));
+vi.mock('@/hooks/usePrefersFinePointer', () => ({
+  usePrefersFinePointer: () => mockFine(),
 }));
 
 import MagneticCard from './MagneticCard';
@@ -14,6 +18,7 @@ describe('MagneticCard', () => {
     cleanup();
     vi.clearAllMocks();
     mockReduced.mockReturnValue(false);
+    mockFine.mockReturnValue(true);
   });
 
   afterEach(() => {
@@ -222,6 +227,22 @@ describe('MagneticCard', () => {
       y: 0,
       toJSON: () => ({}),
     });
+
+    fireEvent.pointerMove(article, { clientX: 150, clientY: 50 });
+    expect(rafSpy).not.toHaveBeenCalled();
+    expect(article.style.transform).toBe('');
+  });
+
+  it('skips transform when the primary pointer is not fine', () => {
+    mockFine.mockReturnValue(false);
+    const rafSpy = vi.spyOn(window, 'requestAnimationFrame');
+
+    render(
+      <MagneticCard>
+        <span>Content</span>
+      </MagneticCard>,
+    );
+    const article = document.querySelector('article')!;
 
     fireEvent.pointerMove(article, { clientX: 150, clientY: 50 });
     expect(rafSpy).not.toHaveBeenCalled();

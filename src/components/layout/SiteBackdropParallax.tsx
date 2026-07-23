@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect } from 'react';
+import { usePrefersFinePointer } from '@/hooks/usePrefersFinePointer';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 
 /**
  * SiteBackdropParallax — 全站背景视差跟随 client 层.
@@ -11,12 +13,16 @@ import { useEffect } from 'react';
  * 设计取舍: 用 DOM 选择器而非 ref, 因 Stage 是 server component 无法跨 SSG/CSR 边界传 ref.
  * returns null: 不渲染 DOM, 仅副作用.
  *
+ * Gate: prefers-reduced-motion 或 coarse pointer 时不挂 pointer 监听 (CH-PERF-006).
  * 客户端 JS 体积 < 1KB gzipped.
  */
 export default function SiteBackdropParallax() {
+  const reduced = usePrefersReducedMotion();
+  const finePointer = usePrefersFinePointer();
+  const motionEnabled = !reduced && finePointer;
+
   useEffect(() => {
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReduced) return;
+    if (!motionEnabled) return;
 
     const stage = document.querySelector<HTMLElement>('.site-backdrop__stage');
     if (!stage) return;
@@ -52,7 +58,7 @@ export default function SiteBackdropParallax() {
       stage.style.setProperty('--parallax-y', '0px');
     };
 
-    window.addEventListener('pointermove', handleMove);
+    window.addEventListener('pointermove', handleMove, { passive: true });
     window.addEventListener('mouseleave', handleLeave);
     return () => {
       if (frameId !== null) {
@@ -60,8 +66,10 @@ export default function SiteBackdropParallax() {
       }
       window.removeEventListener('pointermove', handleMove);
       window.removeEventListener('mouseleave', handleLeave);
+      stage.style.setProperty('--parallax-x', '0px');
+      stage.style.setProperty('--parallax-y', '0px');
     };
-  }, []);
+  }, [motionEnabled]);
 
   return null;
 }

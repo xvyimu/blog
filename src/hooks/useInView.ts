@@ -9,6 +9,11 @@ export interface UseInViewOptions {
   threshold?: number | number[];
   /** IntersectionObserver rootMargin. */
   rootMargin?: string;
+  /**
+   * When false, skip creating an IntersectionObserver entirely.
+   * Use for prefers-reduced-motion paths that reveal immediately.
+   */
+  enabled?: boolean;
 }
 
 /**
@@ -19,6 +24,7 @@ export interface UseInViewOptions {
  *   Use for lazy-load + reveal-once patterns.
  * - `once: false` — re-fires when the element leaves/re-enters.
  *   Use for pause-when-offscreen patterns.
+ * - `enabled: false` — no observer; stays `false` (caller handles fallback).
  *
  * SSR-safe: returns `false` on the server and during the first client
  * render; the observer is attached in `useEffect`.
@@ -27,10 +33,16 @@ export function useInView<T extends Element>(
   ref: RefObject<T | null>,
   options: UseInViewOptions = {},
 ): boolean {
-  const { once = true, threshold = 0, rootMargin = '0px' } = options;
+  const { once = true, threshold = 0, rootMargin = '0px', enabled = true } =
+    options;
   const [inView, setInView] = useState(false);
 
   useEffect(() => {
+    if (!enabled) {
+      setInView(false);
+      return;
+    }
+
     const el = ref.current;
     if (!el) return;
 
@@ -51,9 +63,9 @@ export function useInView<T extends Element>(
     return () => {
       observer?.disconnect();
     };
-    // once/threshold/rootMargin are stable across renders in practice;
+    // once/threshold/rootMargin/enabled are stable across renders in practice;
     // include them anyway for correctness if a caller passes new literals.
-  }, [ref, once, threshold, rootMargin]);
+  }, [ref, once, threshold, rootMargin, enabled]);
 
   return inView;
 }

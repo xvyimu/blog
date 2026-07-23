@@ -17,9 +17,19 @@ const CSP_REPORT_PATH = '/api/csp-report';
 
 export function proxy(_request: NextRequest) {
   const isDev = process.env.NODE_ENV === 'development';
+  const requestHeaders = new Headers(_request.headers);
+  // Always forward pathname so RSC Header can mark active links without
+  // pulling the whole chrome into a client tree (CH-PERF-006).
+  requestHeaders.set('x-pathname', _request.nextUrl.pathname);
 
   // In dev, skip CSP — Turbopack HMR needs inline scripts and websocket
-  if (isDev) return NextResponse.next();
+  if (isDev) {
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    });
+  }
 
   const nonce = btoa(crypto.randomUUID());
   const csp = [
@@ -48,7 +58,6 @@ export function proxy(_request: NextRequest) {
     `report-to ${CSP_REPORT_GROUP}`,
   ].join('; ');
 
-  const requestHeaders = new Headers(_request.headers);
   requestHeaders.set('x-nonce', nonce);
   requestHeaders.set('Content-Security-Policy', csp);
 

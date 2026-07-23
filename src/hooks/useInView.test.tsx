@@ -71,6 +71,12 @@ describe('useInView', () => {
     expect(getByText('out')).toBeTruthy();
   });
 
+  it('does not create an observer when enabled is false', () => {
+    const { getByText } = render(<TestComponent options={{ enabled: false }} />);
+    expect(getByText('out')).toBeTruthy();
+    expect(MockIntersectionObserver.instances).toHaveLength(0);
+  });
+
   it('returns true after intersection fires (once: true default)', async () => {
     const { getByText } = render(<TestComponent />);
     act(() => {
