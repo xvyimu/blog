@@ -2,18 +2,16 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, cleanup } from '@testing-library/react';
 import SiteBackdropParallax from '@/components/layout/SiteBackdropParallax';
 
-function mockMatchMedia(matches: boolean) {
-  const mq = {
-    matches,
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-  };
-  Object.defineProperty(window, 'matchMedia', {
-    writable: true,
-    value: vi.fn(() => mq),
-  });
-  return mq;
-}
+const mockReduced = vi.fn().mockReturnValue(false);
+const mockFine = vi.fn().mockReturnValue(true);
+
+vi.mock('@/hooks/usePrefersReducedMotion', () => ({
+  usePrefersReducedMotion: () => mockReduced(),
+}));
+
+vi.mock('@/hooks/usePrefersFinePointer', () => ({
+  usePrefersFinePointer: () => mockFine(),
+}));
 
 describe('SiteBackdropParallax', () => {
   let addSpy: ReturnType<typeof vi.spyOn>;
@@ -25,9 +23,9 @@ describe('SiteBackdropParallax', () => {
 
   beforeEach(() => {
     cleanup();
-    // Ensure a stage element exists in DOM by default
     document.body.innerHTML = '<div class="site-backdrop__stage"></div>';
-    mockMatchMedia(false);
+    mockReduced.mockReturnValue(false);
+    mockFine.mockReturnValue(true);
     addSpy = vi.spyOn(window, 'addEventListener');
     removeSpy = vi.spyOn(window, 'removeEventListener');
     frameCallbacks = new Map();
@@ -56,7 +54,13 @@ describe('SiteBackdropParallax', () => {
   });
 
   it('does not attach listeners when prefers-reduced-motion: reduce', () => {
-    mockMatchMedia(true);
+    mockReduced.mockReturnValue(true);
+    render(<SiteBackdropParallax />);
+    expect(addSpy).not.toHaveBeenCalled();
+  });
+
+  it('does not attach listeners when the primary pointer is not fine', () => {
+    mockFine.mockReturnValue(false);
     render(<SiteBackdropParallax />);
     expect(addSpy).not.toHaveBeenCalled();
   });
@@ -73,7 +77,6 @@ describe('SiteBackdropParallax', () => {
     const setPropSpy = vi.spyOn(stage.style, 'setProperty');
 
     render(<SiteBackdropParallax />);
-    // Simulate mousemove at center-right of viewport
     Object.defineProperty(window, 'innerWidth', {
       writable: true,
       configurable: true,
@@ -95,8 +98,8 @@ describe('SiteBackdropParallax', () => {
       clientY: 500,
     } as PointerEvent);
     handler({
-      clientX: 1000, // far right → x = (1000/1000 - 0.5) * 2 = 1 → 8px
-      clientY: 0, // top → y = (0/500 - 0.5) * 2 = -1 → -8px
+      clientX: 1000,
+      clientY: 0,
     } as PointerEvent);
 
     expect(rafSpy).toHaveBeenCalledTimes(1);
@@ -161,9 +164,8 @@ describe('SiteBackdropParallax', () => {
   });
 
   it('does nothing when .site-backdrop__stage is not found in DOM', () => {
-    document.body.innerHTML = ''; // remove stage
+    document.body.innerHTML = '';
     render(<SiteBackdropParallax />);
-    // Only matchMedia check should run; no listeners attached
     expect(addSpy).not.toHaveBeenCalled();
   });
 });

@@ -15,7 +15,7 @@ import './styles/responsive.css'; // 响应式断点 (最后,覆盖前面)
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import SiteBackdropStage from '@/components/layout/SiteBackdropStage';
-import SiteBackdropParallax from '@/components/layout/SiteBackdropParallax';
+import SiteBackdropParallaxGate from '@/components/layout/SiteBackdropParallaxGate';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { SITE_CONFIG } from '@/lib/site';
@@ -105,7 +105,7 @@ export default async function RootLayout({
         style={{ fontFamily: 'var(--font-noto-sans-sc), system-ui, sans-serif' }}
       >
         <SiteBackdropStage />
-        <SiteBackdropParallax />
+        <SiteBackdropParallaxGate />
         <a href="#main-content" className="skip-link">
           跳到主要内容
         </a>

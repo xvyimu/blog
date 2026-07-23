@@ -19,10 +19,13 @@ export default function RevealOnScroll({
 }: RevealOnScrollProps) {
   const ref = useRef<HTMLElement>(null);
   const reduced = usePrefersReducedMotion();
+  // Skip IntersectionObserver entirely when reduced motion is preferred —
+  // CSS already forces full opacity via @media (prefers-reduced-motion).
   const inView = useInView(ref, {
     once: true,
     threshold: 0.08,
     rootMargin: '0px 0px -48px 0px',
+    enabled: !reduced,
   });
 
   useEffect(() => {

@@ -20,15 +20,27 @@ import {
  * Policy construction is centralized in src/lib/csp.ts so tests can lock
  * invariants (nonce, no script-src unsafe-inline, report channels) without
  * depending on NextRequest wiring.
+ *
+ * x-pathname (CH-PERF-006): always forwarded so RSC Header can mark active
+ * links without pulling the whole chrome into a client tree. Must also be
+ * set in dev (CSP skipped) so soft-nav active state still works.
  */
 export function proxy(_request: NextRequest) {
+  const requestHeaders = new Headers(_request.headers);
+  requestHeaders.set('x-pathname', _request.nextUrl.pathname);
+
   // In dev, skip CSP — Turbopack HMR needs inline scripts and websocket
-  if (!shouldApplyCsp()) return NextResponse.next();
+  if (!shouldApplyCsp()) {
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    });
+  }
 
   const nonce = createCspNonce();
   const csp = buildProductionCsp(nonce);
 
-  const requestHeaders = new Headers(_request.headers);
   requestHeaders.set('x-nonce', nonce);
   requestHeaders.set('Content-Security-Policy', csp);
 

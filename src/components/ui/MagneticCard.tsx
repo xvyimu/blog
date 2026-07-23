@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, type PointerEvent, type ReactNode } from 'react';
+import { usePrefersFinePointer } from '@/hooks/usePrefersFinePointer';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 import { cn } from '@/lib/utils';
 
@@ -19,6 +20,8 @@ export default function MagneticCard({
 }) {
   const ref = useRef<HTMLElement>(null);
   const reduced = usePrefersReducedMotion();
+  const finePointer = usePrefersFinePointer();
+  const motionEnabled = !reduced && finePointer;
   const frameIdRef = useRef<number | null>(null);
   const latestRef = useRef({ clientX: 0, clientY: 0 });
 
@@ -31,10 +34,27 @@ export default function MagneticCard({
     };
   }, []);
 
+  // Drop any in-flight frame when motion is disabled (reduced / coarse pointer).
+  useEffect(() => {
+    if (motionEnabled) return;
+    if (frameIdRef.current !== null) {
+      window.cancelAnimationFrame(frameIdRef.current);
+      frameIdRef.current = null;
+    }
+    const el = ref.current;
+    if (!el) return;
+    el.style.transform = '';
+    el.style.removeProperty('--glow-x');
+    el.style.removeProperty('--glow-y');
+    el.style.removeProperty('--spotlight-x');
+    el.style.removeProperty('--spotlight-y');
+    el.style.removeProperty('--spotlight-size');
+  }, [motionEnabled]);
+
   const applyPosition = () => {
     frameIdRef.current = null;
     const el = ref.current;
-    if (!el || reduced) return;
+    if (!el || !motionEnabled) return;
 
     const { clientX, clientY } = latestRef.current;
     const rect = el.getBoundingClientRect();
@@ -54,7 +74,7 @@ export default function MagneticCard({
   };
 
   const handlePointerMove = (event: PointerEvent<HTMLElement>) => {
-    if (event.pointerType === 'touch' || reduced) return;
+    if (event.pointerType === 'touch' || !motionEnabled) return;
 
     latestRef.current = { clientX: event.clientX, clientY: event.clientY };
     if (frameIdRef.current === null) {
@@ -81,8 +101,8 @@ export default function MagneticCard({
     <Tag
       ref={ref as never}
       className={cn('magnetic-card', className)}
-      onPointerMove={handlePointerMove}
-      onPointerLeave={handleLeave}
+      onPointerMove={motionEnabled ? handlePointerMove : undefined}
+      onPointerLeave={motionEnabled ? handleLeave : undefined}
     >
       {children}
     </Tag>
