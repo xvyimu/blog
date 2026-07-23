@@ -90,3 +90,6 @@ next-env.d.ts
 
 # dev output
 .dev-out.log
+
+# local tool (codebase-memory) - do not commit
+.cbmignore
