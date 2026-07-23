@@ -1,15 +1,11 @@
-# Evidence · ch-perf-scout 2026-07-24
+# Evidence · ch-perf-integrate (combined)
 
-| 命令 | 环境 | Exit code | 备注 |
-|------|------|-----------|------|
-| `pnpm install --frozen-lockfile` | Node v24.16.0 / pnpm 11.8.0 | **0** | WARN engines wanted 22.x |
-| `pnpm typecheck` | 同上 | **0** | `tsc --noEmit` |
-| `pnpm test` | 同上 | **0** | Vitest 4.1.9 · **716 tests / 95 files** · ~27.5s |
-| `pnpm content:build` | 同上 | **0** | `[content:build] unchanged (hash=ec03c7dabca8…)` |
-| `pnpm build` | — | **未跑** | scout 优先 typecheck+vitest；prod build 重 |
-| `pnpm test:e2e` | — | **未跑** | Playwright + Chromium + prod server 过重 |
-| Lighthouse / bundle-budget | — | **未跑** | 引用 `docs/performance-baseline.md` 既有数字 |
+## From integrate branch (pre-merge)
 
-**Git：** branch `xvyimu/ch-perf-scout` · tip `83085a7`  
-**产物：** 根 `findings.md`（存在但 **`.gitignore` 忽略**）· 可提交 `docs/ops/ch-perf-scout-2026-07-24.md`（全文同步）· `evidence.md`  
-**Orca：** `worktree set` comment=`scout done · findings ready` · workspace-status=`in-review` · ok
+# Evidence · ch-perf-scout 2026-07-24 | 命令 | 环境 | Exit code | 备注 | |------|------|-----------|------| | `pnpm install --frozen-lockfile` | Node v24.16.0 / pnpm 11.8.0 | **0** | WARN engines wanted 22.x | | `pnpm typecheck` | 同上 | **0** | `tsc --noEmit` | | `pnpm test` | 同上 | **0** | Vitest 4.1.9 · **716 tests / 95 files** · ~27.5s | | `pnpm content:build` | 同上 | **0** | `[content:build] unchanged (hash=ec03c7dabca8…)` | | `pnpm build` | — | **未跑** | scout 优先 typecheck+vitest；prod build 重 | | `pnpm test:e2e` | — | **未跑** | Playwright + Chromium + prod server 过重 | | Lighthouse / bundle-budget | — | **未跑** | 引用 `docs/performance-baseline.md` 既有数字 | **Git：** branch `xvyimu/ch-perf-scout` · tip `83085a7` **产物：** 根 `findings.md`（存在但 **`.gitignore` 忽略**）· 可提交 `docs/ops/ch-perf-scout-2026-07-24.md`（全文同步）· `evidence.md` **Orca：** `worktree set` comment=`scout done · findings ready` · workspace-status=`in-review` · ok
+
+---
+
+## From xvyimu/ch-perf-css-route
+
+# CH-PERF-001 · CSS 路由下沉 evidence 日期：2026-07-24 分支：`xvyimu/ch-perf-css-route` 目标：根 layout 去掉 blog/article/archive/prose 全局串联，降低非相关路由阻塞 CSS。 ## Before · 根 `src/app/layout.tsx` CSS import `text globals.css styles/tokens.css styles/base.css styles/components.css styles/archive.css styles/controls.css styles/blog-ui.css styles/article-ui.css styles/backdrop.css styles/prose.css styles/animations.css styles/responsive.css ` （已有下沉：`home*.css`→`page.tsx`；`search-ui.css`→`blog/layout`；`links.css`→`links/layout`；`project-detail.css`→`projects/[id]/layout`） ## After · 根 layout 仅全局 `text globals.css styles/tokens.css styles/base.css          # 含 not-found（从 blog-ui 迁入，根边界） styles/components.css styles/controls.css styles/backdrop.css styles/animations.css styles/responsive.css ` ## After · 路由下沉 | CSS | 挂载点 | | --- | --- | | `search-ui.css` + `blog-ui.css` | `src/app/blog/layout.tsx` | | `article-ui.css` + `prose.css` | `src/app/blog/[slug]/layout.tsx`（新建） | | `prose.css` | `src/app/about/layout.tsx`（新建） | | `blog-ui.css` | `src/app/tags/layout.tsx`（新建） | | `archive.css` + `blog-ui.css` | `src/app/categories/layout.tsx`（新建） | | `archive.css` | `src/app/series/layout.tsx`（新建） | | `home*.css` / `links.css` / `project-detail.css` | 保持原 page/layout | 附带清理：`blog-ui.css` 删除未使用的 `.theme-toggle` 块（ThemeToggle 已用 Button `icon-toolbar`）；`.not-found*` 迁入 `base.css`。 文档同步：`docs/css-conventions.md` · `docs/architecture.md` · `AGENTS.md` 样式加载说明。 ## 验证 | 命令 | exit | | --- | ---: | | `pnpm typecheck` | 0 | | `pnpm test` | 0（95 files / 716 tests） | | `pnpm exec cross-env NEXT_PUBLIC_SITE_URL=https://incca.ccwu.cc pnpm build` | 0 | 说明：裸 `pnpm build` 因缺 `NEXT_PUBLIC_SITE_URL` exit 1（既有配置门闩，非本改动引入）。构建日志有一次 Google Fonts 超时 warning，页面生成仍完成。 未跑 LH / e2e（任务可选）；无新 perf 数字。 ## 残留 - `responsive.css` 仍全局包含 archive/blog/article/prose 断点规则（选择器无对应 DOM 时无害，但字节仍随根 CSS 下发）；彻底拆分需另债。 - `controls.css` 中 `pagination` / `tag-link` / `reading-prefs` 触控扩展仍全局；与 Header CTA 共用文件，未再拆。 - Node 本机为 v24，项目 want 22.x（engine warn）。

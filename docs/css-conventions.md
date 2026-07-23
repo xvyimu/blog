@@ -6,20 +6,21 @@
 
 ```
 globals.css                   ← Tailwind v4 入口，不承载 @import 链
-src/app/layout.tsx            ← 显式 import 全局语义 CSS 模块
+src/app/layout.tsx            ← 仅真正全局语义 CSS
 ├── styles/tokens.css         ← 设计令牌、明暗主题变量、滚动条
-├── styles/base.css           ← 全局基础、skip-link、Header、Footer
+├── styles/base.css           ← 全局基础、skip-link、Header、Footer、not-found
 ├── styles/components.css     ← Section / Card 等通用布局组件
-├── styles/archive.css        ← ArchiveCard / 归档网格 / 归档列表
-├── styles/controls.css       ← Button / Pagination / TagLink / 小型控制
-├── styles/blog-ui.css        ← BlogCard / TOC / Tag cloud / Image zoom
-├── styles/article-ui.css     ← Article layout / Article panels / Related posts
+├── styles/controls.css       ← CTA Button / Pagination / TagLink / 项目卡控件
 ├── styles/backdrop.css       ← Paper Gallery 背景层
-├── styles/prose.css          ← MDX 文章排版样式
 ├── styles/animations.css     ← reveal / fade motion
 └── styles/responsive.css     ← 响应式断点覆盖，最后加载
 src/app/page.tsx              ← home.css / home-hero.css / home-sections.css
-src/app/blog/layout.tsx       ← search-ui.css
+src/app/blog/layout.tsx       ← search-ui.css + blog-ui.css
+src/app/blog/[slug]/layout.tsx ← article-ui.css + prose.css
+src/app/about/layout.tsx      ← prose.css
+src/app/tags/layout.tsx       ← blog-ui.css
+src/app/categories/layout.tsx ← archive.css + blog-ui.css
+src/app/series/layout.tsx     ← archive.css
 src/app/links/layout.tsx      ← links.css
 src/app/projects/[id]/layout.tsx ← project-detail.css
 ```

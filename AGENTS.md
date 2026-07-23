@@ -63,24 +63,24 @@ src/
 │   ├── about/              # About page
 │   ├── styles/             # Semantic CSS modules (17 files, each ≤500 lines)
 │   │   ├── tokens.css      # Design tokens (light/dark theme vars, spacing, shadows)
-│   │   ├── base.css        # Global base (skip-link, header, footer, reduced-motion)
+│   │   ├── base.css        # Global base (skip-link, header, footer, not-found)
 │   │   ├── components.css   # Generic layout and card components
-│   │   ├── archive.css      # Archive grids, archive cards, archive lists
-│   │   ├── controls.css     # Buttons, pagination, tag links, small controls
-│   │   ├── links.css       # Links directory and curated resource UI
-│   │   ├── blog-ui.css     # Blog list, TOC, tag cloud, image zoom, not-found
-│   │   ├── search-ui.css   # Search input and results UI
-│   │   ├── article-ui.css  # Article detail layout, panels, related posts
+│   │   ├── archive.css      # Archive grids/cards/lists (categories + series layouts)
+│   │   ├── controls.css     # CTA buttons, pagination, tag links, project card controls
+│   │   ├── links.css       # Links directory (links/layout)
+│   │   ├── blog-ui.css     # Blog list, TOC, tag cloud, image zoom (blog/tags/categories)
+│   │   ├── search-ui.css   # Search input and results (blog/layout)
+│   │   ├── article-ui.css  # Article detail (blog/[slug]/layout)
 │   │   ├── backdrop.css    # Backdrop layer (body::before/after + .site-backdrop__stage)
-│   │   ├── home.css        # Home paper theme, shared overrides, responsive home rules
-│   │   ├── home-hero.css   # Home editorial hero
-│   │   ├── home-sections.css # Home Manifesto, ReadingPath, ArticleRail, links, CTA
-│   │   ├── prose.css      # Article typography (.prose, code block)
-│   │   ├── project-detail.css # Project detail
+│   │   ├── home.css        # Home paper theme (page.tsx only)
+│   │   ├── home-hero.css   # Home editorial hero (page.tsx only)
+│   │   ├── home-sections.css # Home sections (page.tsx only)
+│   │   ├── prose.css      # MDX typography (blog/[slug] + about layouts)
+│   │   ├── project-detail.css # Project detail (projects/[id]/layout)
 │   │   ├── animations.css # Animations (reveal, fade-in-up)
 │   │   └── responsive.css  # Responsive breakpoints (loaded last, overrides above)
 │   ├── globals.css         # CSS entry (Tailwind v4 only, ~12 lines, NO @import chain)
-│   ├── layout.tsx          # Root layout (fonts, theme, skip-link, CSS imports)
+│   ├── layout.tsx          # Root layout (global CSS only; route CSS in segment layouts)
 │   ├── manifest.ts         # PWA manifest (from site config)
 │   ├── page.tsx            # Home page
 │   ├── sitemap.ts          # Dynamic sitemap

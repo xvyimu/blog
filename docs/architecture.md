@@ -63,8 +63,8 @@ content/ + data/
 
 ### 样式加载
 
-- **根 layout**：tokens / base / components / archive / controls / blog-ui / article-ui / backdrop / prose / animations / responsive。
-- **路由下沉**：`home*.css` → `app/page.tsx`；`search-ui.css` → `app/blog/layout.tsx`；`links.css` → `app/links/layout.tsx`；`project-detail.css` → `app/projects/[id]/layout.tsx`。
+- **根 layout**：tokens / base / components / controls / backdrop / animations / responsive。
+- **路由下沉**：`home*.css` → `app/page.tsx`；`search-ui.css` + `blog-ui.css` → `app/blog/layout.tsx`；`article-ui.css` + `prose.css` → `app/blog/[slug]/layout.tsx`；`prose.css` → `app/about/layout.tsx`；`blog-ui.css` → `app/tags/layout.tsx`；`archive.css` + `blog-ui.css` → `app/categories/layout.tsx`；`archive.css` → `app/series/layout.tsx`；`links.css` → `app/links/layout.tsx`；`project-detail.css` → `app/projects/[id]/layout.tsx`。
 
 ### JSON 数据 fail-fast
 
