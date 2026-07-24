@@ -47,12 +47,12 @@ class MockIntersectionObserver {
 globalThis.IntersectionObserver =
   MockIntersectionObserver as unknown as typeof IntersectionObserver;
 
-async function revealCopyButton() {
+async function revealCopyButton(name: string | RegExp = '复制代码') {
   await act(async () => {
     MockIntersectionObserver.fireIntersection(true);
   });
   await vi.waitFor(() => {
-    expect(screen.getByRole('button', { name: '复制' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name })).toBeInTheDocument();
   });
 }
 
@@ -88,7 +88,7 @@ describe('CodeBlock', () => {
         <code>test</code>
       </CodeBlock>,
     );
-    expect(screen.queryByRole('button', { name: '复制' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '复制代码' })).not.toBeInTheDocument();
     expect(document.querySelector('[data-copy-ready="false"]')).toBeInTheDocument();
   });
 
@@ -99,7 +99,20 @@ describe('CodeBlock', () => {
       </CodeBlock>,
     );
     await revealCopyButton();
-    expect(screen.getByRole('button', { name: '复制' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '复制代码' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '复制代码' })).toHaveTextContent('复制');
+  });
+
+  it('labels copy control with data-language when present', async () => {
+    render(
+      <CodeBlock data-language="typescript">
+        <code>const x: number = 1;</code>
+      </CodeBlock>,
+    );
+    await revealCopyButton('复制 typescript 代码');
+    expect(
+      screen.getByRole('button', { name: '复制 typescript 代码' }),
+    ).toBeInTheDocument();
   });
 
   it('copies code text to clipboard on click', async () => {
@@ -114,7 +127,7 @@ describe('CodeBlock', () => {
     await revealCopyButton();
 
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: '复制' }));
+      fireEvent.click(screen.getByRole('button', { name: '复制代码' }));
     });
     expect(writeText).toHaveBeenCalledWith("console.log('hello')");
   });
@@ -133,17 +146,20 @@ describe('CodeBlock', () => {
     vi.useFakeTimers();
     try {
       await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: '复制' }));
+        fireEvent.click(screen.getByRole('button', { name: '复制代码' }));
       });
       await act(async () => {
         await Promise.resolve();
       });
-      expect(screen.getByRole('button', { name: '已复制 ✓' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '已复制代码' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '已复制代码' })).toHaveTextContent(
+        '已复制 ✓',
+      );
 
       act(() => {
         vi.advanceTimersByTime(2000);
       });
-      expect(screen.getByRole('button', { name: '复制' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '复制代码' })).toBeInTheDocument();
     } finally {
       vi.useRealTimers();
     }
@@ -167,10 +183,10 @@ describe('CodeBlock', () => {
     await revealCopyButton();
 
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: '复制' }));
+      fireEvent.click(screen.getByRole('button', { name: '复制代码' }));
     });
     await vi.waitFor(() => {
-      expect(screen.getByRole('button', { name: '复制失败' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '复制代码失败' })).toBeInTheDocument();
     });
   });
 

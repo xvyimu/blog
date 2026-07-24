@@ -18,13 +18,22 @@ interface ImageZoomProps {
   sizes?: string;
   /** Eager-load when true (hero/above-fold only). Default: lazy. */
   priority?: boolean;
+  /** next/image encoder quality (1–100). Default: DEFAULT_QUALITY. */
+  quality?: number;
   /** Optional LQIP; when set, next/image uses blur placeholder on the thumb. */
   blurDataURL?: string;
 }
 
-const DEFAULT_WIDTH = 1200;
-const DEFAULT_HEIGHT = 630;
-const DEFAULT_SIZES = '(max-width: 768px) 100vw, min(720px, 92vw)';
+/** Stable intrinsic defaults when MDX omits width/height (CLS guard). */
+export const DEFAULT_WIDTH = 1200;
+export const DEFAULT_HEIGHT = 630;
+/** Article column ~720px; full-bleed on small screens. */
+export const DEFAULT_SIZES = '(max-width: 768px) 100vw, min(720px, 92vw)';
+/**
+ * Content images are not LCP candidates (lazy by default). Cap encoder quality
+ * so WebP/AVIF stay lighter than raw PNG/JPEG without visible prose degradation.
+ */
+export const DEFAULT_QUALITY = 70;
 
 function parsePositiveDim(value: number | string | undefined): number | undefined {
   if (typeof value === 'number' && Number.isFinite(value) && value > 0) {
@@ -59,6 +68,7 @@ export default function ImageZoom({
   height,
   sizes,
   priority = false,
+  quality = DEFAULT_QUALITY,
   blurDataURL,
 }: ImageZoomProps) {
   const [zoomed, setZoomed] = useState(false);
@@ -126,6 +136,10 @@ export default function ImageZoom({
   const resolvedHeight = parsePositiveDim(height) ?? DEFAULT_HEIGHT;
   const resolvedBlur = blurDataURL ?? blurDataFor(src);
   const resolvedSizes = sizes ?? DEFAULT_SIZES;
+  const resolvedQuality =
+    typeof quality === 'number' && Number.isFinite(quality) && quality > 0
+      ? Math.min(100, Math.round(quality))
+      : DEFAULT_QUALITY;
 
   return (
     <>
@@ -136,6 +150,8 @@ export default function ImageZoom({
         width={resolvedWidth}
         height={resolvedHeight}
         sizes={resolvedSizes}
+        quality={resolvedQuality}
+        decoding="async"
         loading={priority ? undefined : 'lazy'}
         priority={priority}
         onClick={open}
@@ -190,6 +206,8 @@ export default function ImageZoom({
             className="image-zoom__img"
             onClick={(e) => e.stopPropagation()}
             sizes="92vw"
+            quality={resolvedQuality}
+            decoding="async"
             priority
           />
         </div>

@@ -24,7 +24,7 @@ export default function CodeBlock({ children, ...props }: PreProps) {
         </div>
       )}
       <pre {...props}>{children}</pre>
-      <CodeBlockCopyButton />
+      <CodeBlockCopyButton language={language} />
     </div>
   );
 }

@@ -7,7 +7,12 @@ vi.mock('next/image', async () => {
   return { default: MockNextImage };
 });
 
-import ImageZoom from './ImageZoom';
+import ImageZoom, {
+  DEFAULT_HEIGHT,
+  DEFAULT_QUALITY,
+  DEFAULT_SIZES,
+  DEFAULT_WIDTH,
+} from './ImageZoom';
 
 describe('ImageZoom', () => {
   beforeEach(() => {
@@ -34,12 +39,15 @@ describe('ImageZoom', () => {
     expect(thumb).toBeInTheDocument();
     expect(thumb).toHaveAttribute('src', '/test.jpg');
     expect(thumb).toHaveClass('image-zoom__trigger');
-    expect(thumb).toHaveAttribute('width', '1200');
-    expect(thumb).toHaveAttribute('height', '630');
+    expect(thumb).toHaveAttribute('width', String(DEFAULT_WIDTH));
+    expect(thumb).toHaveAttribute('height', String(DEFAULT_HEIGHT));
     expect(thumb).toHaveAttribute('loading', 'lazy');
+    expect(thumb).toHaveAttribute('decoding', 'async');
+    expect(thumb).toHaveAttribute('data-quality', String(DEFAULT_QUALITY));
+    expect(thumb).toHaveAttribute('data-sizes', DEFAULT_SIZES);
   });
 
-  it('honors explicit width/height/sizes and priority loading', () => {
+  it('honors explicit width/height/sizes/quality and priority loading', () => {
     render(
       <ImageZoom
         src="/hero.jpg"
@@ -47,13 +55,17 @@ describe('ImageZoom', () => {
         width={800}
         height={400}
         sizes="100vw"
+        quality={55}
         priority
       />,
     );
     const thumb = screen.getByRole('button', { name: 'Hero — 点击放大' });
     expect(thumb).toHaveAttribute('width', '800');
     expect(thumb).toHaveAttribute('height', '400');
-    // Mock strips sizes; priority maps to no lazy loading attr from component path
+    expect(thumb).toHaveAttribute('data-sizes', '100vw');
+    expect(thumb).toHaveAttribute('data-quality', '55');
+    expect(thumb).toHaveAttribute('decoding', 'async');
+    // priority maps to no lazy loading attr from component path
     expect(thumb).not.toHaveAttribute('loading', 'lazy');
   });
 
@@ -164,12 +176,14 @@ describe('ImageZoom', () => {
   });
 
   it('renders large image inside overlay with fill layout', () => {
-    render(<ImageZoom src="/test.jpg" alt="Test" />);
+    render(<ImageZoom src="/test.jpg" alt="Test" quality={60} />);
     fireEvent.click(screen.getByRole('button', { name: 'Test — 点击放大' }));
 
     const overlayImg = screen.getByRole('img');
     expect(overlayImg).toHaveAttribute('src', '/test.jpg');
     expect(overlayImg).toHaveAttribute('data-fill', 'true');
+    expect(overlayImg).toHaveAttribute('data-quality', '60');
+    expect(overlayImg).toHaveAttribute('decoding', 'async');
     expect(overlayImg).toHaveClass('image-zoom__img');
   });
 

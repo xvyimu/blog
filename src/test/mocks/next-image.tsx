@@ -20,6 +20,7 @@ export default function MockNextImage({
   onLoadingComplete: _onLoadingComplete,
   fetchPriority,
   loading,
+  decoding,
   width,
   height,
   ...props
@@ -43,8 +44,11 @@ export default function MockNextImage({
       alt={alt ?? ''}
       data-fill={fill ? 'true' : undefined}
       data-preload={_preload ? 'true' : undefined}
+      data-sizes={_sizes}
+      data-quality={_quality != null ? String(_quality) : undefined}
       fetchPriority={fetchPriority}
       loading={loading}
+      decoding={decoding}
       width={width}
       height={height}
       {...props}

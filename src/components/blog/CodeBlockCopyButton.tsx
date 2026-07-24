@@ -17,7 +17,7 @@ const COPY_LABELS: Record<CopyState, string> = {
  * do not hydrate every copy control on first paint. Reads code text from the
  * sibling <pre> inside .code-toolbar.
  */
-export default function CodeBlockCopyButton() {
+export default function CodeBlockCopyButton({ language }: { language?: string }) {
   const hostRef = useRef<HTMLSpanElement>(null);
   const inView = useInView(hostRef, { once: true, rootMargin: '240px' });
 
@@ -27,12 +27,30 @@ export default function CodeBlockCopyButton() {
       className="copy-btn-slot"
       data-copy-ready={inView ? 'true' : 'false'}
     >
-      {inView ? <CopyButton hostRef={hostRef} /> : null}
+      {inView ? <CopyButton hostRef={hostRef} language={language} /> : null}
     </span>
   );
 }
 
-function CopyButton({ hostRef }: { hostRef: RefObject<HTMLSpanElement | null> }) {
+function copyAriaLabel(state: CopyState, language?: string): string {
+  const lang = language?.trim();
+  switch (state) {
+    case 'copied':
+      return lang ? `已复制 ${lang} 代码` : '已复制代码';
+    case 'failed':
+      return lang ? `复制 ${lang} 代码失败` : '复制代码失败';
+    default:
+      return lang ? `复制 ${lang} 代码` : '复制代码';
+  }
+}
+
+function CopyButton({
+  hostRef,
+  language,
+}: {
+  hostRef: RefObject<HTMLSpanElement | null>;
+  language?: string;
+}) {
   const [copyState, setCopyState] = useState<CopyState>('idle');
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -81,6 +99,7 @@ function CopyButton({ hostRef }: { hostRef: RefObject<HTMLSpanElement | null> })
       onClick={handleCopy}
       type="button"
       title={COPY_LABELS[copyState]}
+      aria-label={copyAriaLabel(copyState, language)}
       aria-live="polite"
     >
       {COPY_LABELS[copyState]}
